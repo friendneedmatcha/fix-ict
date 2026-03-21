@@ -16,7 +16,7 @@ class MyWidget extends StatelessWidget {
       title: "fixICT",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'IBMPlexSansThai',
+        fontFamily: 'IBM',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
       ),
       home: Homepage(),

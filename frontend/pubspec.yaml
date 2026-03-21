@@ -74,7 +74,7 @@ flutter:
   # example:
 
   fonts:
-    - family: IBMPlexSansThai
+    - family: IBM
       fonts:
         - asset: assets/fonts/IBMPlexSansThai-Thin.ttf
           weight: 100
