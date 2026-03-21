@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/homePage.dart';
+import 'package:frontend/screens/loginPage.dart';
+import 'package:frontend/screens/registerPage.dart';
 
-void main() {
-  runApp(const MyApp());
+void main(List<String> args) {
+  runApp(MyWidget());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyWidget extends StatelessWidget {
+  const MyWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
