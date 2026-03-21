@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/homePage.dart';
 import 'package:frontend/screens/loginPage.dart';
 import 'package:frontend/screens/registerPage.dart';
 
@@ -12,8 +13,13 @@ class MyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "fixICT",
       debugShowCheckedModeBanner: false,
-      home: Registerpage()
+      theme: ThemeData(
+        fontFamily: 'IBMPlexSansThai',
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
+      ),
+      home: Homepage(),
     );
   }
 }
