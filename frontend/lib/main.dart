@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/homePage.dart';
 import 'package:frontend/screens/loginPage.dart';
+import 'package:frontend/screens/profilePage.dart';
 import 'package:frontend/screens/registerPage.dart';
 
 void main(List<String> args) {
@@ -19,7 +20,7 @@ class MyWidget extends StatelessWidget {
         fontFamily: 'IBM',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
       ),
-      home: Homepage(),
+      home: Profilepage(),
     );
   }
 }
