@@ -38,7 +38,7 @@ class _ProfilepageState extends State<Profilepage> {
                       Text(
                         "Edit Profile",
                         style: TextStyle(
-                          fontFamily: "IBMPlexSansThai",
+                          fontFamily: "IBM",
                           fontSize: 15,
                         ),
                       ),
@@ -97,7 +97,7 @@ class _btn extends StatelessWidget {
               label,
               style: TextStyle(
                 color: color,
-                fontFamily: "IBMPlexSansThai",
+                fontFamily: "IBM",
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -129,7 +129,7 @@ class _dataShow extends StatelessWidget {
               child: Text(
                 lable,
                 style: TextStyle(
-                  fontFamily: "IBMPlexSansThai",
+                  fontFamily: "IBM",
                   fontSize: 20,
                   color: Color(0xFF5E5E5E),
                 ),
@@ -141,7 +141,7 @@ class _dataShow extends StatelessWidget {
               child: Text(
                 data,
                 style: TextStyle(
-                  fontFamily: "IBMPlexSansThai",
+                  fontFamily: "IBM",
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
                 ),
