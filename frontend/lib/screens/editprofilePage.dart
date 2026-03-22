@@ -27,39 +27,42 @@ class _EditprofilepageState extends State<Editprofilepage> {
         ),
       ),
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                children: [
-                  CircleAvatar(radius: 80, backgroundColor: Colors.green,),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.white,
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.edit),
-                        color: Colors.green,
-                        iconSize: 20,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  children: [
+                    CircleAvatar(radius: 80, backgroundColor: Colors.green,),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.white,
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.edit),
+                          color: Colors.green,
+                          iconSize: 20,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 60),
-              _dataShow(lable: "First Name", data: "Baby"),
-              _dataShow(lable: "Last Name", data: "Boat"),
-              _dataShow(lable: "Phone", data: "099-999-9999"),
-              _dataShow(lable: "Email", data: "babyBoat@gmail.com"),
-
-              SizedBox(height: 50),
-              _btn(label: "save", color: Color(0xFF105D38)),
-            ],
+                  ],
+                ),
+          
+                SizedBox(height: 60),
+                _dataShow(lable: "First Name", data: "Baby"),
+                _dataShow(lable: "Last Name", data: "Boat"),
+                _dataShow(lable: "Phone", data: "099-999-9999"),
+                _dataShow(lable: "Email", data: "babyBoat@gmail.com"),
+          
+                SizedBox(height: 50),
+                _btn(label: "save", color: Color(0xFF105D38)),
+              ],
+            ),
           ),
         ),
       ),

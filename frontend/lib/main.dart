@@ -7,6 +7,7 @@ import 'package:frontend/screens/loginPage.dart';
 import 'package:frontend/screens/profilePage.dart';
 import 'package:frontend/screens/registerPage.dart';
 import 'package:frontend/screens/formPage.dart';
+import 'package:frontend/screens/reportlistPage.dart';
 
 void main(List<String> args) {
   runApp(MyWidget());
@@ -24,7 +25,7 @@ class MyWidget extends StatelessWidget {
         fontFamily: 'IBM',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
       ),
-      home: Aboutuspage(),
+      home: Reportlistpage(),
     );
   }
 }
