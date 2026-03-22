@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  "2025",
+                                  "Dec 2, 2020 3:30PM",
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color.from(
