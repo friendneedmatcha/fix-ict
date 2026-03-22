@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +23,7 @@ class _HomepageState extends State<Homepage> {
                   children: [
                     SizedBox(height: 24),
                     Text(
-                      "Hello Boat eiei",
+                      'Hello Witchapon Aka',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -32,62 +32,56 @@ class _HomepageState extends State<Homepage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      "สวัสดี จ้าาาาาาา",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(255, 104, 104, 104),
-                      ),
+                      'สวัสดีตอนเช้าค่',
+                      style: TextStyle(fontSize: 14, color: Color(0xFF9E9E9E)),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 20),
                     Container(
-                      height: 170,
+                      width: double.infinity,
+                      height: 180,
                       decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(11),
+                        color: const Color(0xFF4CAF79),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
+
                     Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2E7D52),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Row(
                         children: [
-                          Expanded(
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 18,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    right: BorderSide(
-                                      color: Color(0xFF3D8B65),
-                                      width: 1,
-                                    ),
-                                  ),
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.handyman_outlined,
-                                      color: Colors.white,
-                                      size: 26,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      "555",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                          _buildActionButton(
+                            icon: Icons.handyman_outlined,
+                            label: 'แจ้งซ่อม',
+                            onTap: () {},
+                            showRightBorder: true,
+                          ),
+                          _buildActionButton(
+                            icon: Icons.bar_chart_outlined,
+                            label: 'ติดตาม',
+                            onTap: () {},
+                            showRightBorder: true,
+                          ),
+                          _buildActionButton(
+                            icon: Icons.history_outlined,
+                            label: 'ประวัติ',
+                            onTap: () {},
+                            showRightBorder: false,
                           ),
                         ],
+                      ),
+                    ),
+                    SizedBox(height: 28),
+
+                    Text(
+                      'รายการล่าสุดที่แจ้งเข้ามา',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1A1A1A),
                       ),
                     ),
                   ],
@@ -99,4 +93,46 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
+}
+
+Widget _buildActionButton({
+  required IconData icon,
+  required String label,
+  required VoidCallback onTap,
+  required bool showRightBorder,
+}) {
+  return Expanded(
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        splashColor: Colors.white24,
+        highlightColor: Colors.white10,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 18),
+          decoration: BoxDecoration(
+            border: showRightBorder
+                ? Border(right: BorderSide(color: Color(0xFF3D8B65), width: 1))
+                : null,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white, size: 26),
+              SizedBox(height: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
