@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
 
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2E7D52),
+                        color: const Color(0xFF105D38),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -82,6 +82,74 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+
+                    SizedBox(height: 14),
+
+                    Container(
+                      margin: EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 8,
+                            offset: Offset(9, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Color(0xFF105D38),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 20),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "ทดสอบ",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "2025",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color.from(
+                                      alpha: 1,
+                                      red: 0.62,
+                                      green: 0.62,
+                                      blue: 0.62,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

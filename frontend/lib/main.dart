@@ -19,7 +19,7 @@ class MyWidget extends StatelessWidget {
         fontFamily: 'IBM',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
       ),
-      home: Homepage(),
+      home: HomePage(),
     );
   }
 }
