@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/aboutusPage.dart';
 import 'package:frontend/screens/editprofilePage.dart';
 import 'package:frontend/screens/homePage.dart';
 import 'package:frontend/screens/loginPage.dart';
@@ -21,7 +22,7 @@ class MyWidget extends StatelessWidget {
         fontFamily: 'IBM',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
       ),
-      home: Editprofilepage(),
+      home: Aboutuspage(),
     );
   }
 }
