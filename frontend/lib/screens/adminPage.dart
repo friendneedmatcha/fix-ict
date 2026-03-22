@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class AdminPage extends StatefulWidget {
+  const AdminPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<AdminPage> createState() => _AdminPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,13 +55,13 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           _buildActionButton(
                             icon: Icons.handyman_outlined,
-                            label: 'แจ้งซ่อม',
+                            label: 'ดูการแจ้งซ่อม',
                             onTap: () {},
                             showRightBorder: true,
                           ),
                           _buildActionButton(
-                            icon: Icons.bar_chart_outlined,
-                            label: 'ติดตาม',
+                            icon: Icons.account_circle,
+                            label: 'จัดการผู้ใช้',
                             onTap: () {},
                             showRightBorder: true,
                           ),

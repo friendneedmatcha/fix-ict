@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/aboutusPage.dart';
 import 'package:frontend/screens/editprofilePage.dart';
+import 'package:frontend/screens/adminpage.dart';
 import 'package:frontend/screens/homePage.dart';
 import 'package:frontend/screens/loginPage.dart';
 import 'package:frontend/screens/profilePage.dart';
 import 'package:frontend/screens/registerPage.dart';
+import 'package:frontend/screens/formPage.dart';
 
 void main(List<String> args) {
   runApp(MyWidget());
