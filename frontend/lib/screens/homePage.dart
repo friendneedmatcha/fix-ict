@@ -38,6 +38,58 @@ class _HomepageState extends State<Homepage> {
                         color: Color.fromARGB(255, 104, 104, 104),
                       ),
                     ),
+                    SizedBox(height: 16),
+                    Container(
+                      height: 170,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Container(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    right: BorderSide(
+                                      color: Color(0xFF3D8B65),
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.handyman_outlined,
+                                      color: Colors.white,
+                                      size: 26,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      "555",
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
