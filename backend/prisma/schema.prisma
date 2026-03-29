@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat  = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  SUCCESS
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  email         String   @unique
+  password      String
+  tel           String
+  role          Role     @default(USER)
+
+  profileImage  String?  // 👈 รูปโปรไฟล์ (URL)
+
+  reports       Report[]
+  feedbacks     Feedback[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+
+  reports   Report[]
+}
+
+model Report {
+  id           Int        @id @default(autoincrement())
+  title        String
+  location     String
+  priority     Priority
+  description  String
+
+  imageBefore  String?    // รูปก่อนซ่อม (URL)
+
+  status       Status     @default(PENDING)
+
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+
+  categoryId   Int
+  category     Category   @relation(fields: [categoryId], references: [id])
+
+  updates      ReportUpdate[]
+  feedback     Feedback?
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model ReportUpdate {
+  id          Int       @id @default(autoincrement())
+
+  reportId    Int
+  report      Report    @relation(fields: [reportId], references: [id])
+
+  status      Status
+  note        String?
+
+  imageAfter  String?   // รูปหลังซ่อม (URL)
+
+  updatedBy   Int       // admin ที่แก้ไข (userId)
+
+  createdAt   DateTime  @default(now())
+
+  @@index([reportId])
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+
+  reportId  Int      @unique
+  report    Report   @relation(fields: [reportId], references: [id])
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  rating    Int      // 1-5
+  comment   String
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
