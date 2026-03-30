@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
 export class UserCreateDto {
   @IsString()
@@ -8,11 +8,12 @@ export class UserCreateDto {
   lastName: string;
   @IsString()
   email: string;
-  @Exclude()
+  // @Exclude()
   @IsString()
   password: string;
   @IsString()
   tel: string;
   @IsString()
+  @IsOptional()
   profileImage: string;
 }

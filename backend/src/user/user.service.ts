@@ -71,8 +71,8 @@ export class UserService {
     try {
       await this.getbyid(id);
 
-      const deluser = await this.prisma.user.delete({ where: { id: +id } });
-      return { message: 'Delete Success', deluser };
+      await this.prisma.user.delete({ where: { id: +id } });
+      return { message: 'Delete Success' };
     } catch (err) {
       if (err instanceof NotFoundException) {
         throw err;
