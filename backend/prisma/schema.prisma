@@ -45,7 +45,8 @@ model User {
 
   reports       Report[]
   feedbacks     Feedback[]
-
+  reportupdate  ReportUpdate[]
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -96,10 +97,12 @@ model ReportUpdate {
   imageAfter  String?   // รูปหลังซ่อม (URL)
 
   updatedBy   Int       // admin ที่แก้ไข (userId)
+  user        User     @relation(fields: [updatedBy], references: [id], onDelete: Cascade)
 
   createdAt   DateTime  @default(now())
 
   @@index([reportId])
+  @@index([updatedBy])
 }
 
 model Feedback {
