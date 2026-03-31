@@ -39,6 +39,8 @@ model User {
   tel           String
   role          Role     @default(USER)
 
+  refreshtoken  String?
+
   profileImage  String?  // 👈 รูปโปรไฟล์ (URL)
 
   reports       Report[]
