@@ -126,6 +126,146 @@ class _HistoryPageState extends State<HistoryPage> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 14),
+                    IntrinsicHeight(
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                          left: 18,
+                          right: 18,
+                          // top: 5,
+                          // bottom: 5,
+                        ),
+                        margin: const EdgeInsets.only(bottom: 48),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/img/cardhis.png'),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: IntrinsicHeight(
+                                child: Container(
+                                  color: Color(0xFFFFFFFF),
+                                  padding: const EdgeInsets.only(
+                                    top: 5,
+                                    bottom: 12,
+                                    left: 5,
+                                    right: 5,
+                                  ),
+                                  margin: const EdgeInsets.only(right: 13),
+                                  width: double.infinity,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: IntrinsicHeight(
+                                          child: Container(
+                                            padding: const EdgeInsets.only(
+                                              right: 3,
+                                            ),
+                                            margin: const EdgeInsets.only(
+                                              right: 13,
+                                            ),
+                                            width: double.infinity,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                    bottom: 6,
+                                                  ),
+                                                  child: Text(
+                                                    "TITLE NAME",
+                                                    style: TextStyle(
+                                                      color: Color(0xFF105D38),
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                    left: 3,
+                                                  ),
+                                                  width: double.infinity,
+                                                  child: Text(
+                                                    "ดูดดอกครับกูไม่ดูดเกล็ดแต่กูบิดสุดปลอกตอนที่กูดูดเสร็จ\n",
+                                                    style: TextStyle(
+                                                      color: Color(0xFF606060),
+                                                      fontSize: 8,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                          right: 11,
+                                        ),
+                                        width: 29,
+                                        child: Text(
+                                          "Date\nTime\nStatus  ",
+                                          style: TextStyle(
+                                            color: Color(0xFF000000),
+                                            fontSize: 10,
+                                          ),
+                                          textAlign: TextAlign.right,
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 39,
+                                        child: Text(
+                                          "12/12/69    \n0:00PM      \nกำลังซ่อม  ",
+                                          style: TextStyle(
+                                            color: Color(0xFF606060),
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IntrinsicWidth(
+                              child: IntrinsicHeight(
+                                child: Container(
+                                  color: Color(0xFFFFFFFF),
+                                  padding: const EdgeInsets.only(
+                                    top: 38,
+                                    bottom: 38,
+                                    left: 7,
+                                    right: 7,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "CLICK",
+                                        style: TextStyle(
+                                          color: Color(0xFF105D38),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
