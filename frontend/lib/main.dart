@@ -4,6 +4,7 @@ import 'package:frontend/screens/editprofilePage.dart';
 import 'package:frontend/screens/adminpage.dart';
 import 'package:frontend/screens/homePage.dart';
 import 'package:frontend/screens/loginPage.dart';
+import 'package:frontend/screens/manageuserPage.dart';
 import 'package:frontend/screens/profilePage.dart';
 import 'package:frontend/screens/registerPage.dart';
 import 'package:frontend/screens/formPage.dart';
@@ -24,7 +25,7 @@ class MyWidget extends StatelessWidget {
         fontFamily: 'IBM',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
       ),
-      home: Aboutuspage(),
+      home: Manageuserpage(),
     );
   }
 }
