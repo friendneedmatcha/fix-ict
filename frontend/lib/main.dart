@@ -8,6 +8,8 @@ import 'package:frontend/screens/manageuserPage.dart';
 import 'package:frontend/screens/profilePage.dart';
 import 'package:frontend/screens/registerPage.dart';
 import 'package:frontend/screens/formPage.dart';
+import 'package:frontend/screens/reportlistPage.dart';
+import 'package:frontend/screens/updatereportPage.dart';
 
 void main(List<String> args) {
   runApp(MyWidget());
