@@ -127,7 +127,7 @@ export class UserService {
     }
   }
 
-  updateRefreshToken(userId: number, token: string) {
+  updateRefreshToken(userId: number, token: string | null) {
     // console.log(userId, token);
     return this.prisma.user.update({
       where: {
