@@ -45,7 +45,8 @@ model User {
 
   reports       Report[]
   feedbacks     Feedback[]
-
+  reportupdate  ReportUpdate[]
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -69,10 +70,10 @@ model Report {
   status       Status     @default(PENDING)
 
   userId       Int
-  user         User       @relation(fields: [userId], references: [id])
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   categoryId   Int
-  category     Category   @relation(fields: [categoryId], references: [id])
+  category     Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   updates      ReportUpdate[]
   feedback     Feedback?
@@ -88,7 +89,7 @@ model ReportUpdate {
   id          Int       @id @default(autoincrement())
 
   reportId    Int
-  report      Report    @relation(fields: [reportId], references: [id])
+  report      Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   status      Status
   note        String?
@@ -96,20 +97,22 @@ model ReportUpdate {
   imageAfter  String?   // รูปหลังซ่อม (URL)
 
   updatedBy   Int       // admin ที่แก้ไข (userId)
+  user        User     @relation(fields: [updatedBy], references: [id], onDelete: Cascade)
 
   createdAt   DateTime  @default(now())
 
   @@index([reportId])
+  @@index([updatedBy])
 }
 
 model Feedback {
   id        Int      @id @default(autoincrement())
 
   reportId  Int      @unique
-  report    Report   @relation(fields: [reportId], references: [id])
+  report    Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   rating    Int      // 1-5
   comment   String
