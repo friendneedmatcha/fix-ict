@@ -8,6 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserDto } from './dto/user.dto';
 import { UserCreateDto } from './dto/user-create.dto';
 import * as bcrypt from 'bcrypt';
+import { error } from 'console';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
@@ -83,7 +84,9 @@ export class UserService {
 
   async create(data: UserCreateDto) {
     try {
+      console.log(data.email);
       const email = await this.findbyemail(data.email);
+      // console.log('555');
       if (email) {
         throw new ConflictException('Email already exist');
       }
@@ -123,5 +126,14 @@ export class UserService {
       }
       throw new InternalServerErrorException('Server Error');
     }
+  }
+
+  updateRefreshToken(userId: number, token: string) {
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: { refreshtoken: token },
+    });
   }
 }
