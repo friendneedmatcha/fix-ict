@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserCreateDto {
@@ -8,7 +8,7 @@ export class UserCreateDto {
   firstName: string;
   @IsString()
   lastName: string;
-  @IsString()
+  @IsEmail()
   email: string;
   // @Exclude()
   @IsString()
@@ -17,5 +17,5 @@ export class UserCreateDto {
   tel: string;
   @IsString()
   @IsOptional()
-  profileImage: string;
+  profileImage?: string;
 }
