@@ -2,14 +2,14 @@ import { IsEmail, IsString } from 'class-validator';
 
 export class RegisterDto {
   @IsString()
-  firstName?: string;
+  firstName: string;
   @IsString()
-  lastName?: string;
+  lastName: string;
   @IsEmail()
-  email?: string;
+  email: string;
   // @Exclude()
   @IsString()
-  password?: string;
+  password: string;
   @IsString()
-  tel?: string;
+  tel: string;
 }

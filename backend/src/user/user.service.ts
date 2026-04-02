@@ -84,7 +84,6 @@ export class UserService {
 
   async create(data: UserCreateDto) {
     try {
-      console.log(data.email);
       const email = await this.findbyemail(data.email);
       // console.log('555');
       if (email) {
@@ -129,9 +128,10 @@ export class UserService {
   }
 
   updateRefreshToken(userId: number, token: string) {
+    // console.log(userId, token);
     return this.prisma.user.update({
       where: {
-        id: userId,
+        id: +userId,
       },
       data: { refreshtoken: token },
     });
