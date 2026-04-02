@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -21,7 +22,8 @@ export class AuthService {
     if (!email) {
       throw new NotFoundException('notfound user');
     }
-    if (email.password !== data.password) {
+    const checkPass = await bcrypt.compare(data.password, email.password);
+    if (!checkPass) {
       throw new UnauthorizedException('password incorrect');
     }
     return this.generateToken(email);
@@ -31,6 +33,13 @@ export class AuthService {
     const user = await this.userService.create(data);
 
     return this.generateToken(user.result);
+  }
+
+  async logout(userId: number) {
+    const user = await this.userService.updateRefreshToken(userId, null);
+    return {
+      message: 'logout success',
+    };
   }
 
   async generateToken(user: any) {
@@ -56,5 +65,16 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async refreshToken(email: string, rt: string) {
+    const checkUser = await this.userService.findbyemail(email);
+    if (!checkUser || !checkUser.refreshtoken) {
+      throw new ForbiddenException();
+    }
+    const checkToken = await bcrypt.compare(rt, checkUser.refreshtoken);
+    if (!checkToken) throw new ForbiddenException();
+
+    return this.generateToken(checkUser);
   }
 }
