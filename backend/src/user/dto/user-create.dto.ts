@@ -1,21 +1,21 @@
 import { Exclude } from 'class-transformer';
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserCreateDto {
   @IsString()
   @ApiProperty({ example: 'boat' })
-  firstName: string;
+  firstName?: string;
   @IsString()
-  lastName: string;
-  @IsString()
-  email: string;
+  lastName?: string;
+  @IsEmail()
+  email?: string;
   // @Exclude()
   @IsString()
-  password: string;
+  password?: string;
   @IsString()
-  tel: string;
+  tel?: string;
   @IsString()
   @IsOptional()
-  profileImage: string;
+  profileImage?: string;
 }
