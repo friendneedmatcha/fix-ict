@@ -3,10 +3,10 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
-  Req,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -19,13 +19,27 @@ export class CategoryController {
     return this.categoryService.create(xx);
   }
 
+  // @Get()
+  // getall() {
+  //   return this.categoryService.findAll();
+  // }
+
   @Get()
-  getall() {
+  getOne(@Query('name') name?: string) {
+    if (name) {
+      console.log(name);
+      return this.categoryService.findByName(name);
+    }
     return this.categoryService.findAll();
   }
 
-  @Get(':name')
-  getOne(@Param('name') name: string) {
-    console.log(name);
+  @Put(':id')
+  update(@Param('id') id: number, @Body() data: CreateCategoryDto) {
+    return this.categoryService.update(id, data);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: number) {
+    return this.categoryService.remove(+id);
   }
 }
