@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { UpdateReportDto } from './dto/update-report.dto';
@@ -16,7 +18,8 @@ import { CreateReportDto } from './dto/create-report.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FeedbackDto } from '../feedback/dto/feedback.dto';
 import { FeedbackService } from '../feedback/feedback.service';
-import { report } from 'process';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfig } from 'src/multer.config';
 
 @Controller('report')
 export class ReportController {
@@ -26,8 +29,12 @@ export class ReportController {
   ) {}
 
   @Post()
-  async createReport(@Body() data: CreateReportDto) {
-    return await this.reportService.create(data);
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async createReport(
+    @Body() data: CreateReportDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.reportService.create(data, file);
   }
 
   @Get('top')
