@@ -41,6 +41,14 @@ export class CategoryService {
     });
   }
 
+  async findById(id: number) {
+    return this.prisma.category.findFirst({
+      where: {
+        id: +id,
+      },
+    });
+  }
+
   async findAll() {
     try {
       const user = await this.prisma.category.findMany();
@@ -57,19 +65,31 @@ export class CategoryService {
     }
   }
 
-  async findOne(name: string) {
-    return this.prisma.category.findFirst({
+  async update(id: number, data: CreateCategoryDto) {
+    const checkId = await this.findById(id);
+    if (!checkId) throw new NotFoundException('not found');
+    const update = await this.prisma.category.update({
       where: {
-        name: name,
+        id: +id,
+      },
+      data: {
+        name: data.name,
       },
     });
+    return update;
   }
 
-  update(id: number, data: CreateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    const checkId = await this.findById(id);
+    if (!checkId) throw new NotFoundException('not found');
+    const delSt = await this.prisma.category.delete({
+      where: {
+        id: +id,
+      },
+    });
+    return {
+      message: 'delete successfully',
+      delSt,
+    };
   }
 }
