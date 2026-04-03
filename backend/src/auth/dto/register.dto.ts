@@ -1,16 +1,15 @@
-import { IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
 export class RegisterDto {
   @IsString()
   firstName: string;
   @IsString()
   lastName: string;
-  @IsString()
+  @IsEmail()
   email: string;
+  // @Exclude()
   @IsString()
   password: string;
   @IsString()
   tel: string;
-  @IsString()
-  profileImage: string;
 }

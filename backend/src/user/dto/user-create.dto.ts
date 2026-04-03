@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsEmail, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from 'generated/prisma/enums';
 
 export class UserCreateDto {
   @IsString()
@@ -8,14 +9,18 @@ export class UserCreateDto {
   firstName: string;
   @IsString()
   lastName: string;
-  @IsString()
+  @IsEmail()
   email: string;
   // @Exclude()
   @IsString()
   password: string;
   @IsString()
   tel: string;
+
+  @IsEnum(Role)
+  @IsOptional()
+  role?: Role;
   @IsString()
   @IsOptional()
-  profileImage: string;
+  profileImage?: string;
 }

@@ -1,0 +1,27 @@
+info:
+  name: create
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{URL_TEST}}/user/"
+  body:
+    type: json
+    data: |-
+      {
+        "firstName":"superboat",
+        "lastName":"salaya",
+        "email":"superboat@gmail.com",
+        "password":"superboat555",
+        "tel":"082323232",
+        "role":"ADMIN"
+      //   "profileImage": ""
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

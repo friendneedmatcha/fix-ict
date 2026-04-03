@@ -1,0 +1,26 @@
+info:
+  name: create
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{URL_TEST}}/report"
+  body:
+    type: json
+    data: |-
+      {
+        "title":"แอร์จ้าพี่ลาก่อน",
+        "location":"ห้องน้ำชั้น 3",
+        "priority": "HIGH",
+        "description":"ทดสอddบ555",
+        "userId":2,
+        "categoryId":6
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
