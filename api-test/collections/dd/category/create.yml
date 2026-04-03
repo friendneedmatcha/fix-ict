@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "name":"general"
+        "name":"ไฟฟ้า"
       }
   auth: inherit
 
