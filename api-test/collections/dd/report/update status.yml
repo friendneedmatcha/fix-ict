@@ -1,16 +1,18 @@
 info:
-  name: create
+  name: update status
   type: http
-  seq: 3
+  seq: 5
 
 http:
-  method: POST
-  url: "{{URL_TEST}}/category"
+  method: PATCH
+  url: "{{URL_TEST}}/report/2"
   body:
     type: json
     data: |-
       {
-        "name":"general"
+        "status":"SUCCESS",
+        "note":"ok in SUCCESS",
+        "updatedBy":5
       }
   auth: inherit
 

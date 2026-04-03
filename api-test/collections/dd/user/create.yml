@@ -10,12 +10,13 @@ http:
     type: json
     data: |-
       {
-        "firstName":"arlif",
-        "lastName":"thongrakjan",
-        "email":"arlif@gmail.com",
-        "password":"arlif555",
-        "tel":"1234",
-        "profileImage": ""
+        "firstName":"superboat",
+        "lastName":"salaya",
+        "email":"superboat@gmail.com",
+        "password":"superboat555",
+        "tel":"082323232",
+        "role":"ADMIN"
+      //   "profileImage": ""
       }
   auth: inherit
 
