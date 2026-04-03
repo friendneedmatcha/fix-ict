@@ -10,13 +10,13 @@ import { CreateReportDto } from './dto/create-report.dto';
 export class ReportService {
   constructor(private prisma: PrismaService) {}
 
-  // async create(data: CreateReportDto) {
-  //   try {
-  //     return await this.prisma.report.create({ data });
-  //   } catch {
-  //     throw new InternalServerErrorException('Server Error');
-  //   }
-  // }
+  async create(data: CreateReportDto) {
+    try {
+      return await this.prisma.report.create({ data });
+    } catch {
+      throw new InternalServerErrorException('Server Error');
+    }
+  }
 
   async getAll() {
     try {
@@ -27,16 +27,16 @@ export class ReportService {
     }
   }
 
-  // async getbyuser(id: number) {
-  //   try {
-  //     return await this.prisma.report.findMany({ where: { userId: id } });
-  //   } catch (err) {
-  //     if (err instanceof NotFoundException) {
-  //       throw err;
-  //     }
-  //     throw new InternalServerErrorException('Server Error');
-  //   }
-  // }
+  async getbyuser(id: number) {
+    try {
+      return await this.prisma.report.findMany({ where: { userId: id } });
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Server Error');
+    }
+  }
 
   async getbyid(id: number) {
     try {
