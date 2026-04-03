@@ -51,18 +51,29 @@ export class UserService {
   }
 
   async update(id: string, data: UserDto) {
+    const checkMail = await this.findbyemail(data.email);
+    if (checkMail) throw new ConflictException('dup mail');
+    const updateData = { ...data };
+
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+
     try {
-      await this.getbyid(id);
       const update = await this.prisma.user.update({
         where: { id: +id },
-        data: data,
+        data: updateData,
       });
 
-      return { message: 'Update Success', update };
+      return {
+        message: 'Update Success',
+        update,
+      };
     } catch (err) {
       if (err instanceof NotFoundException) {
         throw err;
       }
+      console.log(err);
       throw new InternalServerErrorException('Server Error');
     }
   }
