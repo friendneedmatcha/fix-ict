@@ -10,10 +10,22 @@ import { CreateReportDto } from './dto/create-report.dto';
 export class ReportService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateReportDto) {
+  async create(data: CreateReportDto, file: Express.Multer.File) {
+    console.log(file);
     try {
-      return await this.prisma.report.create({ data });
-    } catch {
+      return await this.prisma.report.create({
+        data: {
+          title: data.title,
+          description: data.description,
+          location: data.location,
+          priority: data.priority,
+          imageBefore: file.filename,
+          userId: +data.userId,
+          categoryId: +data.categoryId,
+        },
+      });
+    } catch (err) {
+      console.log(err);
       throw new InternalServerErrorException('Server Error');
     }
   }

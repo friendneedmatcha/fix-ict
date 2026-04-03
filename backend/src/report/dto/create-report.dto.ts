@@ -27,11 +27,11 @@ export class CreateReportDto {
   @IsOptional()
   imageBefore?: string;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
   userId: number;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
   categoryId: number;
 }
