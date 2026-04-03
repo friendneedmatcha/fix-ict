@@ -11,7 +11,11 @@ export class UserDto {
 
   @IsOptional()
   @IsString()
-  email?: string;
+  email: string;
+
+  @IsOptional()
+  @IsString()
+  password?: string;
 
   @IsOptional()
   @IsString()
