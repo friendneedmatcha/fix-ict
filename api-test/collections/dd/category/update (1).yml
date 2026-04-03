@@ -1,0 +1,21 @@
+info:
+  name: update (1)
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{URL_TEST}}/category/1"
+  body:
+    type: json
+    data: |-
+      {
+        "name":"ITS"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
