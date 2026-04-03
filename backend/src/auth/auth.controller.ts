@@ -13,6 +13,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,14 +29,14 @@ export class AuthController {
     return this.authService.login(data);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtRefreshGuard)
   @Post('logout')
   logout(@Req() req) {
     //  beforce req.user useguard
     return this.authService.logout(req.user.userid);
   }
 
-  @UseGuards(AuthGuard('jwt-refresh'))
+  @UseGuards(JwtRefreshGuard)
   @Post('refresh')
   refresh(@Req() req) {
     return this.authService.refreshToken(req.user.email, req.user.refreshToken);
