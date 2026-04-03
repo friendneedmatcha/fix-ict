@@ -6,6 +6,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { JwtStrategy } from './strategries/jwt.strategy';
 import { JwtRefreshStrategy } from './strategries/jwt-refresh.strategy';
+import { RolesGuard } from './guards/role.guard';
 @Module({
   imports: [PassportModule, JwtModule],
   controllers: [AuthController],
@@ -15,6 +16,7 @@ import { JwtRefreshStrategy } from './strategries/jwt-refresh.strategy';
     UserService,
     JwtStrategy,
     JwtRefreshStrategy,
+    RolesGuard,
   ],
 })
 export class AuthModule {}
