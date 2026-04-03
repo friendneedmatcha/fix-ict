@@ -16,10 +16,10 @@ import { CreateReportDto } from './dto/create-report.dto';
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
-  // @Post()
-  // async createReport(@Body() data: CreateReportDto) {
-  //   return await this.reportService.create(data);
-  // }
+  @Post()
+  async createReport(@Body() data: CreateReportDto) {
+    return await this.reportService.create(data);
+  }
 
   @Get('top')
   gettopfive() {
@@ -31,10 +31,10 @@ export class ReportController {
     return this.reportService.getAll();
   }
 
-  // @Get('user/:id')
-  // getbyuser(@Param('id', ParseIntPipe) id: number) {
-  //   return this.reportService.getbyuser(id);
-  // }
+  @Get('user/:id')
+  getbyuser(@Param('id', ParseIntPipe) id: number) {
+    return this.reportService.getbyuser(id);
+  }
 
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateReportDto) {
