@@ -26,13 +26,26 @@ export class AuthService {
     if (!checkPass) {
       throw new UnauthorizedException('password incorrect');
     }
-    return this.generateToken(email);
+    const { password, ...result } = email;
+    return {
+      message: 'login success',
+      data: {
+        token: await this.generateToken(email),
+        user: result,
+      },
+    };
   }
 
   async register(data: RegisterDto) {
     const user = await this.userService.create(data);
 
-    return this.generateToken(user.result);
+    return {
+      message: 'register success',
+      data: {
+        token: await this.generateToken(user.result),
+        user: user.result,
+      },
+    };
   }
 
   async logout(userId: number) {
