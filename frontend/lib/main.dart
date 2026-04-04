@@ -1,33 +1,76 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/aboutusPage.dart';
-import 'package:frontend/screens/editprofilePage.dart';
-import 'package:frontend/screens/adminpage.dart';
-import 'package:frontend/screens/homePage.dart';
-import 'package:frontend/screens/loginPage.dart';
-import 'package:frontend/screens/manageuserPage.dart';
-import 'package:frontend/screens/profilePage.dart';
-import 'package:frontend/screens/registerPage.dart';
 import 'package:frontend/screens/formPage.dart';
+import 'package:frontend/screens/historryPaage.dart';
+import 'package:frontend/screens/homePage.dart';
+import 'package:frontend/screens/profilePage.dart';
+import 'package:frontend/screens/reportPage.dart';
 import 'package:frontend/screens/reportlistPage.dart';
-import 'package:frontend/screens/updatereportPage.dart';
+import 'package:provider/provider.dart';
 
-void main(List<String> args) {
-  runApp(MyWidget());
+// widgets
+import 'package:frontend/widgets/navbar.dart';
+
+void main() {
+  runApp(
+    // MultiProvider(
+    //   providers: [
+    //     // ChangeNotifierProvider(create: (context) => AuthProvider()),
+    //     // ChangeNotifierProvider(create: (context) => ReportProvider()),
+    //   ],
+    const MyApp(),
+    // ),
+  );
 }
 
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "fixICT",
+      title: 'fixICT',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'IBM',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
+        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
       ),
-      home: Manageuserpage(),
+      home: const MainScreen(),
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedPage = 0;
+
+  void _onItemTapped(int index) {
+    setState(() => _selectedPage = index);
+  }
+
+  final List<Widget> _pages = [
+    const HomePage(),
+    const FormPage(),
+    const HistoryPage(),
+    const Profilepage(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    // final authProvider = Provider.of<AuthProvider>(context);
+
+    return Scaffold(
+      body: IndexedStack(index: _selectedPage, children: _pages),
+      bottomNavigationBar: Navbar(
+        selectedIndex: _selectedPage,
+        onItemTapped: _onItemTapped,
+      ),
     );
   }
 }
