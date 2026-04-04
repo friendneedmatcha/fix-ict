@@ -1,5 +1,6 @@
 import { IsString, IsInt, IsEnum, IsOptional } from 'class-validator';
 import { Status } from '../../../generated/prisma/client';
+import { Type } from 'class-transformer';
 
 export class UpdateReportDto {
   @IsEnum(Status)
@@ -14,5 +15,6 @@ export class UpdateReportDto {
   imageAfter?: string;
 
   @IsInt()
+  @Type(() => Number)
   updatedBy: number;
 }
