@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/authProvider.dart';
 import 'package:frontend/screens/formPage.dart';
 import 'package:frontend/screens/historryPaage.dart';
 import 'package:frontend/screens/homePage.dart';
+import 'package:frontend/screens/loginPage.dart';
 import 'package:frontend/screens/profilePage.dart';
 import 'package:frontend/screens/reportPage.dart';
 import 'package:frontend/screens/reportlistPage.dart';
 import 'package:provider/provider.dart';
-
-// widgets
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/widgets/navbar.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load();
+
   runApp(
-    // MultiProvider(
-    //   providers: [
-    //     // ChangeNotifierProvider(create: (context) => AuthProvider()),
-    //     // ChangeNotifierProvider(create: (context) => ReportProvider()),
-    //   ],
-    const MyApp(),
-    // ),
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => AuthProvider())],
+      child: const MyApp(),
+    ),
   );
 }
 
@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomePage(),
     const FormPage(),
     const HistoryPage(),
-    const Profilepage(),
+    const Loginpage(),
   ];
 
   @override
