@@ -53,8 +53,13 @@ export class ReportController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateReportDto) {
-    return this.reportService.update(id, data);
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateReportDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.reportService.update(id, data, file);
   }
 
   @Get(':id')

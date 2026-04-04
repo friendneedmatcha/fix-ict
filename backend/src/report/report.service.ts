@@ -32,7 +32,13 @@ export class ReportService {
 
   async getAll() {
     try {
-      const report = await this.prisma.report.findMany();
+      const report = await this.prisma.report.findMany({
+        include: {
+          updates: {
+            where: { status: 'SUCCESS' },
+          },
+        },
+      });
       return report;
     } catch {
       throw new InternalServerErrorException('Server Error');
@@ -41,7 +47,14 @@ export class ReportService {
 
   async getbyuser(id: number) {
     try {
-      return await this.prisma.report.findMany({ where: { userId: id } });
+      return await this.prisma.report.findMany({
+        where: { userId: id },
+        include: {
+          updates: {
+            where: { status: 'SUCCESS' },
+          },
+        },
+      });
     } catch (err) {
       if (err instanceof NotFoundException) {
         throw err;
@@ -54,6 +67,11 @@ export class ReportService {
     try {
       const reportid = await this.prisma.report.findUnique({
         where: { id },
+        include: {
+          updates: {
+            where: { status: 'SUCCESS' },
+          },
+        },
       });
       if (!reportid) {
         throw new NotFoundException(`Not Found report id: ${id}`);
@@ -80,18 +98,19 @@ export class ReportService {
     }
   }
 
-  async update(id: number, data: UpdateReportDto) {
+  async update(id: number, data: UpdateReportDto, file: Express.Multer.File) {
     try {
       await this.getbyid(id);
-
       return await this.prisma.$transaction(async (tx) => {
+        const filename =
+          data.status == 'SUCCESS' && file ? file.filename : null;
         await tx.reportUpdate.create({
           data: {
             reportId: id,
             status: data.status,
             note: data.note,
-            imageAfter: data.imageAfter,
-            updatedBy: data.updatedBy,
+            imageAfter: filename,
+            updatedBy: +data.updatedBy,
           },
         });
 
