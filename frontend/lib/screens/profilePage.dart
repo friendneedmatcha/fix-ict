@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/screens/loginPage.dart';
+import 'package:provider/provider.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -10,60 +13,64 @@ class Profilepage extends StatefulWidget {
 class _ProfilepageState extends State<Profilepage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(radius: 80, backgroundColor: Color(0xFF4CD080)),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF105D38),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(100)),
-                  ),
-                ),
-                child: SizedBox(
-                  width: 110,
-                  height: 44,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(Icons.edit, size: 18),
-                      Text(
-                        "Edit Profile",
-                        style: TextStyle(
-                          fontFamily: "IBM",
-                          fontSize: 15,
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    return authProvider.isAuthenticate
+        ? Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 80,
+                      backgroundColor: Color(0xFF4CD080),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF105D38),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(100)),
                         ),
                       ),
-                    ],
-                  ),
+                      child: SizedBox(
+                        width: 110,
+                        height: 44,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(Icons.edit, size: 18),
+                            Text(
+                              "Edit Profile",
+                              style: TextStyle(fontFamily: "IBM", fontSize: 15),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    _dataShow(lable: "Name", data: "Baby Boat"),
+                    _dataShow(lable: "Phone", data: "099-999-9999"),
+                    _dataShow(lable: "Email", data: "BabyBoat@gmail.com"),
+                    SizedBox(height: 20),
+
+                    _btn(label: "Contact About Us", color: Color(0xFF0022FF)),
+                    SizedBox(height: 20),
+                    _btn(
+                      label: "Log Out",
+                      color: Color(0xFFDF0000),
+                      icon: Icons.logout,
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 20),
-              _dataShow(lable: "Name", data: "Baby Boat"),
-              _dataShow(lable: "Phone", data: "099-999-9999"),
-              _dataShow(lable: "Email", data: "BabyBoat@gmail.com"),
-              SizedBox(height: 20),
-
-              _btn(label: "Contact About Us", color: Color(0xFF0022FF)),
-              SizedBox(height: 20),
-              _btn(
-                label: "Log Out",
-                color: Color(0xFFDF0000),
-                icon: Icons.logout,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          )
+        : Loginpage();
   }
 }
 

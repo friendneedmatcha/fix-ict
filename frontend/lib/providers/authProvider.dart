@@ -3,10 +3,13 @@ import 'package:frontend/models/userModel.dart';
 import 'package:frontend/services/authService.dart';
 
 class AuthProvider extends ChangeNotifier {
+  // varible instanace
   Usermodel? _userdata;
   bool _loading = false;
   bool _isAuthenticate = false;
   String? _error;
+
+  // method
 
   Usermodel? get userdata => _userdata;
   bool get isLoading => _loading;

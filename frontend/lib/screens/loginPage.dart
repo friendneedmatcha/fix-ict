@@ -38,7 +38,7 @@ class _LoginpageState extends State<Loginpage> {
               ),
 
               _FormInput(
-                label: "Email", // ✅ FIX
+                label: "Email",
                 icon: Icons.account_circle_outlined,
                 controller: _emailController,
               ),
@@ -58,6 +58,9 @@ class _LoginpageState extends State<Loginpage> {
                   onPressed: authProvider.isLoading
                       ? null
                       : () async {
+                          print(_emailController.text);
+                          print(_passwordController.text);
+
                           await authProvider.login(
                             Usermodel(
                               email: _emailController.text,
