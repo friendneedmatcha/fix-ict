@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/authProvider.dart';
 import 'package:frontend/providers/userProvider.dart';
-import 'package:frontend/screens/formPage.dart';
-import 'package:frontend/screens/historryPaage.dart';
-import 'package:frontend/screens/homePage.dart';
+import 'package:frontend/screens/admin_screen.dart';
 import 'package:frontend/screens/auth/loginPage.dart';
-import 'package:frontend/screens/profilePage.dart';
+import 'package:frontend/screens/user_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/widgets/navbar.dart';
 
 Future<void> main() async {
   await dotenv.load();
@@ -50,19 +47,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedPage = 0;
-
-  void _onItemTapped(int index) {
-    setState(() => _selectedPage = index);
-  }
-
-  final List<Widget> _pages = [
-    const HomePage(),
-    const FormPage(),
-    const HistoryPage(),
-    const Profilepage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -71,12 +55,10 @@ class _MainScreenState extends State<MainScreen> {
       return Loginpage();
     }
 
-    return Scaffold(
-      body: IndexedStack(index: _selectedPage, children: _pages),
-      bottomNavigationBar: Navbar(
-        selectedIndex: _selectedPage,
-        onItemTapped: _onItemTapped,
-      ),
-    );
+    if (authProvider.userdata?.role == "ADMIN") {
+      return const AdminMainScreen();
+    }
+
+    return const UserMainScreen();
   }
 }

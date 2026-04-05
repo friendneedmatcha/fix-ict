@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/providers/authProvider.dart';
-import 'package:frontend/screens/homePage.dart';
-import 'package:frontend/screens/main_screen.dart';
+import 'package:frontend/screens/user/user_home_page.dart';
 import 'package:frontend/screens/auth/registerPage.dart';
+import 'package:frontend/screens/user_screen.dart';
 import 'package:frontend/services/authService.dart';
 import 'package:provider/provider.dart';
 

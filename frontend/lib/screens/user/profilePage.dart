@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/authProvider.dart';
-import 'package:frontend/screens/aboutusPage.dart';
-import 'package:frontend/screens/editprofilePage.dart';
+import 'package:frontend/screens/shared/aboutusPage.dart';
+import 'package:frontend/screens/user/profile/editprofilePage.dart';
 import 'package:frontend/screens/auth/loginPage.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

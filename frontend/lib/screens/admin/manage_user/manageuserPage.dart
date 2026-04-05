@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/providers/userProvider.dart';
-import 'package:frontend/screens/addUserPage.dart';
-import 'package:frontend/screens/editUserPage.dart';
+import 'package:frontend/screens/admin/manage_user/addUserPage.dart';
+import 'package:frontend/screens/admin/manage_user/editUserPage.dart';
 import 'package:provider/provider.dart';
 
 class Manageuserpage extends StatefulWidget {

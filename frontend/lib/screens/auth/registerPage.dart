@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/providers/authProvider.dart';
-import 'package:frontend/screens/homePage.dart';
+import 'package:frontend/screens/user/user_home_page.dart';
 
 class Registerpage extends StatefulWidget {
   final AuthProvider authProvider;
@@ -143,7 +143,7 @@ class _RegisterpageState extends State<Registerpage> {
                               );
                             }
                           },
-                          
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF105D38),
                       foregroundColor: Colors.white,

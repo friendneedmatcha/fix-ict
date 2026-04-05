@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-class Navbar extends StatefulWidget {
+class AdminNabar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
-  const Navbar({
+  const AdminNabar({
     super.key,
     required this.selectedIndex,
     required this.onItemTapped,
   });
   @override
-  State<Navbar> createState() => _NavbarState();
+  State<AdminNabar> createState() => _AdminNavbarState();
 }
 
-class _NavbarState extends State<Navbar> {
+class _AdminNavbarState extends State<AdminNabar> {
   @override
   Widget build(BuildContext context) {
     return _buildBottomNavBar();
@@ -44,7 +44,7 @@ class _NavbarState extends State<Navbar> {
           ),
           _buildBottomNavItem(
             Icons.manage_search,
-            'ค้นหา',
+            'รายการปัญหา',
             widget.selectedIndex == 1,
             1,
           ),
