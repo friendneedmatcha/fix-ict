@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/screens/homePage.dart';
+import 'package:frontend/screens/main_screen.dart';
+import 'package:frontend/screens/registerPage.dart';
 import 'package:frontend/services/authService.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +29,41 @@ class _LoginpageState extends State<Loginpage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30),
+                child: Row(
+                  mainAxisAlignment: .center,
+                  children: [
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Color(0xFF22C375), Color(0xFF105D38)],
+                        begin: Alignment.center,
+                        end: Alignment.topRight,
+                      ).createShader(bounds),
+                      child: const Text(
+                        'Fix',
+                        style: TextStyle(
+                          fontSize: 58,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "IBM",
+                          letterSpacing: 2,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "ICT",
+                      style: TextStyle(
+                        fontSize: 58,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "IBM",
+                        letterSpacing: 2,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 40),
 
               const Text(
@@ -75,6 +113,15 @@ class _LoginpageState extends State<Loginpage> {
                                 backgroundColor: Colors.green,
                               ),
                             );
+                            if (context.mounted) {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MainScreen(),
+                                ),
+                                (route) => false,
+                              );
+                            }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -93,6 +140,25 @@ class _LoginpageState extends State<Loginpage> {
                   child: authProvider.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text("LOGIN"),
+                ),
+              ),
+              SizedBox(height: 30),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          Registerpage(authProvider: authProvider),
+                    ),
+                  );
+                },
+                child: Text(
+                  "Have account? Sign in",
+                  style: TextStyle(
+                    color: Color.fromARGB(106, 0, 0, 0),
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
             ],
@@ -122,6 +188,7 @@ class _FormInput extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 55, vertical: 20),
       child: TextFormField(
         controller: controller,
+        obscureText: isPassword,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(15)),

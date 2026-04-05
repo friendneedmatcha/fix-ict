@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/providers/userProvider.dart';
 import 'package:frontend/screens/formPage.dart';
 import 'package:frontend/screens/historryPaage.dart';
 import 'package:frontend/screens/homePage.dart';
@@ -14,7 +15,10 @@ Future<void> main() async {
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => Userprovider()),
+      ],
       child: const MyApp(),
     ),
   );

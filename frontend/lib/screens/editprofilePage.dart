@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/authProvider.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend/providers/userProvider.dart';
+import 'package:frontend/models/userModel.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Editprofilepage extends StatefulWidget {
   const Editprofilepage({super.key});
@@ -8,8 +15,94 @@ class Editprofilepage extends StatefulWidget {
 }
 
 class _EditprofilepageState extends State<Editprofilepage> {
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final String apiUrl = dotenv.env['API_URL'] ?? "http://10.5.55.154:3038";
+  XFile? _selectedImage;
+  Uint8List? _selectedImageBytes;
+  String _buildImageUrl(String? filename) {
+    if (filename == null || filename.isEmpty) return '';
+    if (filename.startsWith('http')) return filename;
+    return '$apiUrl/uploads/$filename';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      if (authProvider.userdata != null) {
+        _firstNameController.text = authProvider.userdata?.firstName ?? "";
+        _lastNameController.text = authProvider.userdata?.lastName ?? "";
+        _phoneController.text = authProvider.userdata?.tel ?? "";
+        _emailController.text = authProvider.userdata?.email ?? "";
+      }
+    });
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80, // ลดขนาดไฟล์
+    );
+    if (picked != null) {
+      final bytes = await picked.readAsBytes();
+      setState(() {
+        _selectedImage = picked;
+        _selectedImageBytes = bytes;
+      });
+    }
+  }
+
+  Future<void> _handleSave() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userProvider = Provider.of<Userprovider>(context, listen: false);
+
+    final originalEmail = authProvider.userdata?.email ?? "";
+    final newEmail = _emailController.text.trim();
+
+    final updatedUser = Usermodel(
+      id: authProvider.userdata?.id,
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      tel: _phoneController.text.trim(),
+      email: newEmail != originalEmail ? newEmail : null,
+    );
+
+    final success = await userProvider.updateProfile(
+      updatedUser,
+      imageFile: _selectedImage,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      authProvider.updateUserData(userProvider.userdata!);
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userProvider.error ?? 'Update failed')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<Userprovider>(context);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -22,7 +115,7 @@ class _EditprofilepageState extends State<Editprofilepage> {
             overlayColor: Colors.transparent,
             textStyle: TextStyle(fontSize: 20, fontFamily: "IBM"),
           ),
-          onPressed: () {},
+          onPressed: () => Navigator.pop(context),
           child: Text("Cancel"),
         ),
       ),
@@ -31,11 +124,32 @@ class _EditprofilepageState extends State<Editprofilepage> {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Stack(
                   children: [
-                    CircleAvatar(radius: 80, backgroundColor: Colors.green,),
+                    CircleAvatar(
+                      radius: 80,
+                      backgroundColor: Colors.green,
+                      backgroundImage: _selectedImageBytes != null
+                          ? MemoryImage(_selectedImageBytes!)
+                          : (_buildImageUrl(
+                                      authProvider.userdata?.profileImage,
+                                    ).isNotEmpty
+                                    ? NetworkImage(
+                                        _buildImageUrl(
+                                          authProvider.userdata?.profileImage,
+                                        ),
+                                      )
+                                    : null)
+                                as ImageProvider?,
+                      child:
+                          (_selectedImageBytes == null &&
+                              (authProvider.userdata?.profileImage == null ||
+                                  authProvider.userdata!.profileImage!.isEmpty))
+                          ? Icon(Icons.person, size: 80, color: Colors.white)
+                          : null,
+                    ),
+
                     Positioned(
                       bottom: 0,
                       right: 0,
@@ -43,7 +157,7 @@ class _EditprofilepageState extends State<Editprofilepage> {
                         radius: 20,
                         backgroundColor: Colors.white,
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: _pickImage,
                           icon: Icon(Icons.edit),
                           color: Colors.green,
                           iconSize: 20,
@@ -52,15 +166,37 @@ class _EditprofilepageState extends State<Editprofilepage> {
                     ),
                   ],
                 ),
-          
-                SizedBox(height: 60),
-                _dataShow(lable: "First Name", data: "Baby"),
-                _dataShow(lable: "Last Name", data: "Boat"),
-                _dataShow(lable: "Phone", data: "099-999-9999"),
-                _dataShow(lable: "Email", data: "babyBoat@gmail.com"),
-          
+
+                if (_selectedImage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      "รูปใหม่พร้อมอัปโหลด",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontFamily: "IBM",
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+
+                SizedBox(height: 40),
+                _dataShow(
+                  lable: "First Name",
+                  controller: _firstNameController,
+                ),
+                _dataShow(lable: "Last Name", controller: _lastNameController),
+                _dataShow(lable: "Phone", controller: _phoneController),
+                _dataShow(lable: "Email", controller: _emailController),
+
                 SizedBox(height: 50),
-                _btn(label: "save", color: Color(0xFF105D38)),
+                userProvider.isLoading
+                    ? CircularProgressIndicator(color: Color(0xFF105D38))
+                    : _btn(
+                        label: "Save",
+                        color: Color(0xFF105D38),
+                        onPressed: _handleSave,
+                      ),
               ],
             ),
           ),
@@ -70,31 +206,11 @@ class _EditprofilepageState extends State<Editprofilepage> {
   }
 }
 
-class _dataShow extends StatefulWidget {
+class _dataShow extends StatelessWidget {
   final String lable;
-  final String data;
+  final TextEditingController controller;
 
-  const _dataShow({super.key, required this.lable, required this.data});
-
-  @override
-  State<_dataShow> createState() => _dataShowState();
-}
-
-class _dataShowState extends State<_dataShow> {
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _controller = TextEditingController(text: widget.data);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  const _dataShow({super.key, required this.lable, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +225,7 @@ class _dataShowState extends State<_dataShow> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                widget.lable,
+                lable,
                 style: TextStyle(
                   fontFamily: "IBM",
                   fontSize: 20,
@@ -120,7 +236,7 @@ class _dataShowState extends State<_dataShow> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2),
               child: TextFormField(
-                controller: _controller,
+                controller: controller,
                 style: TextStyle(
                   fontSize: 20,
                   fontFamily: "IBM",
@@ -151,7 +267,14 @@ class _btn extends StatelessWidget {
   final String label;
   final Color color;
   final IconData? icon;
-  const _btn({super.key, required this.label, required this.color, this.icon});
+  final VoidCallback? onPressed;
+  const _btn({
+    super.key,
+    required this.label,
+    required this.color,
+    this.icon,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +282,7 @@ class _btn extends StatelessWidget {
       width: 268,
       height: 48,
       child: OutlinedButton(
-        onPressed: () {},
+        onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: color, width: 3),
         ),

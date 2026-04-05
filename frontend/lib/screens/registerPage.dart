@@ -1,17 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/userModel.dart';
+import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/screens/homePage.dart';
 
 class Registerpage extends StatefulWidget {
-  const Registerpage({super.key});
+  final AuthProvider authProvider;
+  const Registerpage({super.key, required this.authProvider});
 
   @override
   State<Registerpage> createState() => _RegisterpageState();
 }
 
 class _RegisterpageState extends State<Registerpage> {
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF105D38)),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -31,25 +61,42 @@ class _RegisterpageState extends State<Registerpage> {
                 SizedBox(height: 50),
                 Row(
                   children: [
-                    Expanded(child: _FormInput(label: "First Name")),
-                    Expanded(child: _FormInput(label: "Last Name")),
+                    Expanded(
+                      child: _FormInput(
+                        label: "First Name",
+                        controller: _firstNameController,
+                      ),
+                    ),
+                    Expanded(
+                      child: _FormInput(
+                        label: "Last Name",
+                        controller: _lastNameController,
+                      ),
+                    ),
                   ],
                 ),
                 _FormInput(
                   label: "Email",
                   icon: Icons.account_circle_outlined,
                   keyboardType: TextInputType.emailAddress,
+                  controller: _emailController,
                 ),
                 _FormInput(
                   label: "Password",
                   icon: Icons.key,
                   isPassword: true,
+                  controller: _passwordController,
                 ),
-                _FormInput(label: "Confirm Password", isPassword: true),
+                _FormInput(
+                  label: "Confirm Password",
+                  isPassword: true,
+                  controller: _confirmPasswordController,
+                ),
                 _FormInput(
                   label: "Phone",
                   icon: Icons.phone,
                   keyboardType: TextInputType.number,
+                  controller: _phoneController,
                 ),
 
                 SizedBox(height: 20),
@@ -58,7 +105,45 @@ class _RegisterpageState extends State<Registerpage> {
                   width: 189,
                   height: 44,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: widget.authProvider.isLoading
+                        ? null
+                        : () async {
+                            final user = Usermodel(
+                              firstName: _firstNameController.text,
+                              lastName: _lastNameController.text,
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                              tel: _phoneController.text,
+                            );
+
+                            final success = await widget.authProvider.register(
+                              user,
+                            );
+
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('สมัครสมาชิกสำเร็จ!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+
+                              Navigator.pop(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    widget.authProvider.error!.replaceAll(
+                                      'Exception: ',
+                                      '',
+                                    ),
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
+                          
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF105D38),
                       foregroundColor: Colors.white,
@@ -92,12 +177,14 @@ class _FormInput extends StatelessWidget {
   final IconData? icon;
   final bool isPassword;
   final TextInputType keyboardType;
+  final TextEditingController controller;
   const _FormInput({
     super.key,
     required this.label,
     this.icon,
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
+    required this.controller,
   });
 
   @override
@@ -105,6 +192,7 @@ class _FormInput extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
       child: TextFormField(
+        controller: controller,
         obscureText: isPassword,
         keyboardType: keyboardType,
         decoration: InputDecoration(

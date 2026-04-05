@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/screens/aboutusPage.dart';
+import 'package:frontend/screens/editprofilePage.dart';
 import 'package:frontend/screens/loginPage.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -11,61 +15,126 @@ class Profilepage extends StatefulWidget {
 }
 
 class _ProfilepageState extends State<Profilepage> {
+  String _buildImageUrl(String? filename) {
+    if (filename == null || filename.isEmpty) return '';
+    if (filename.startsWith('http')) return filename;
+
+    final apiUrl = dotenv.env['API_URL'] ?? "http://10.5.55.154:3038";
+    return '$apiUrl/uploads/$filename';
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final imageUrl = _buildImageUrl(authProvider.userdata?.profileImage);
 
     return authProvider.isAuthenticate
         ? Scaffold(
             backgroundColor: Colors.white,
             body: SafeArea(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 80,
-                      backgroundColor: Color(0xFF4CD080),
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF105D38),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(100)),
-                        ),
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 20),
+                      CircleAvatar(
+                        radius: 80,
+                        backgroundColor: Color(0xFF4CD080),
+                        backgroundImage: imageUrl.isNotEmpty
+                            ? NetworkImage(imageUrl)
+                            : null,
+                        child: imageUrl.isEmpty
+                            ? Icon(Icons.person, size: 80, color: Colors.white)
+                            : null,
                       ),
-                      child: SizedBox(
-                        width: 110,
-                        height: 44,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(Icons.edit, size: 18),
-                            Text(
-                              "Edit Profile",
-                              style: TextStyle(fontFamily: "IBM", fontSize: 15),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Editprofilepage(),
                             ),
-                          ],
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF105D38),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(100),
+                            ),
+                          ),
+                        ),
+                        child: SizedBox(
+                          width: 110,
+                          height: 44,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.edit, size: 18),
+                              Text(
+                                "Edit Profile",
+                                style: TextStyle(
+                                  fontFamily: "IBM",
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    _dataShow(lable: "Name", data: "Baby Boat"),
-                    _dataShow(lable: "Phone", data: "099-999-9999"),
-                    _dataShow(lable: "Email", data: "BabyBoat@gmail.com"),
-                    SizedBox(height: 20),
+                      SizedBox(height: 20),
+                      _dataShow(
+                        lable: "Name",
+                        data:
+                            "${authProvider.userdata?.firstName} ${authProvider.userdata?.lastName}",
+                      ),
+                      _dataShow(
+                        lable: "Phone",
+                        data: authProvider.userdata?.tel ?? "-",
+                      ),
+                      _dataShow(
+                        lable: "Email",
+                        data: authProvider.userdata?.email ?? "-",
+                      ),
+                      SizedBox(height: 20),
 
-                    _btn(label: "Contact About Us", color: Color(0xFF0022FF)),
-                    SizedBox(height: 20),
-                    _btn(
-                      label: "Log Out",
-                      color: Color(0xFFDF0000),
-                      icon: Icons.logout,
-                    ),
-                  ],
+                      _btn(
+                        label: "Contact About Us",
+                        color: Color(0xFF0022FF),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Aboutuspage(),
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      _btn(
+                        label: "Log Out",
+                        color: Color(0xFFDF0000),
+                        icon: Icons.logout,
+                        onTap: () async {
+                          await authProvider.logout();
+
+                          if (context.mounted) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Loginpage(),
+                              ),
+                              (route) => false,
+                            );
+                          }
+                        },
+                      ),
+                      SizedBox(height: 50),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -78,7 +147,14 @@ class _btn extends StatelessWidget {
   final String label;
   final Color color;
   final IconData? icon;
-  const _btn({super.key, required this.label, required this.color, this.icon});
+  final VoidCallback? onTap;
+  const _btn({
+    super.key,
+    required this.label,
+    required this.color,
+    this.icon,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +162,7 @@ class _btn extends StatelessWidget {
       width: 268,
       height: 48,
       child: OutlinedButton(
-        onPressed: () {},
+        onPressed: onTap,
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: color, width: 3),
         ),
