@@ -1,9 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/userModel.dart';
+import 'package:frontend/providers/userProvider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class EditUserPage extends StatefulWidget {
-  const EditUserPage({super.key});
+  final Usermodel user;
+  const EditUserPage({super.key, required this.user});
 
   @override
   State<EditUserPage> createState() => _EditUserPageState();
@@ -15,33 +19,47 @@ class _EditUserPageState extends State<EditUserPage> {
   // final List<String> _priOp = ["ต่ำ", "กลาง", 'สูง'];
   final List<String> _catOp = ["USER", 'ADMIN'];
 
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _telController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // ✅ pre-fill ข้อมูลเดิม
+    _firstNameController.text = widget.user.firstName ?? "";
+    _lastNameController.text = widget.user.lastName ?? "";
+    _emailController.text = widget.user.email ?? "";
+    _telController.text = widget.user.tel ?? "";
+    _selectedCat = widget.user.role;
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _telController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "แก้ไขผู้ใช้งาน",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: const [
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        "แก้ไขผู้ใช้งาน",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // SizedBox(width: 40),
-                ],
-              ),
-            ),
-
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.only(right: 20, left: 20, top: 25),
@@ -50,15 +68,11 @@ class _EditUserPageState extends State<EditUserPage> {
                   children: [
                     const SizedBox(height: 15),
 
-                    BoxInput(name: "ชื่อ"),
-                    const SizedBox(height: 10),
-
-                    BoxInput(name: "นามสกุล"),
-                    const SizedBox(height: 10),
-                    BoxInput(name: "อีเมล"),
-                    const SizedBox(height: 10),
-                    BoxInput(name: "รหัสผ่าน"),
-                    const SizedBox(height: 10),
+                    BoxInput(name: "ชื่อ", controller: _firstNameController),
+                    BoxInput(name: "นามสกุล", controller: _lastNameController),
+                    BoxInput(name: "อีเมล", controller: _emailController),
+                    BoxInput(name: "รหัสผ่าน", controller: _passwordController),
+                    BoxInput(name: "เบอร์โทร", controller: _telController),
 
                     BoxDropdown(
                       name: "บทบาท",
@@ -82,7 +96,37 @@ class _EditUserPageState extends State<EditUserPage> {
                           ),
                           elevation: 0,
                         ),
-                        onPressed: () => print("55"),
+                        onPressed: () async {
+                          final updatedUser = Usermodel(
+                            id: widget.user.id,
+                            firstName: _firstNameController.text.trim(),
+                            lastName: _lastNameController.text.trim(),
+                            email: _emailController.text.trim(),
+                            password: _passwordController.text.isNotEmpty
+                                ? _passwordController.text.trim()
+                                : widget.user.password,
+                            tel: _telController.text.trim(),
+                            role: _selectedCat,
+                          );
+
+                          final success = await Provider.of<Userprovider>(
+                            context,
+                            listen: false,
+                          ).updateUser(widget.user.id!, updatedUser);
+
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("อัพเดทสำเร็จ")),
+                            );
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("อัพเดทไม่สำเร็จ กรุณาลองใหม่"),
+                              ),
+                            );
+                          }
+                        },
                         child: Text(
                           "อัพเดท",
                           style: TextStyle(
@@ -107,8 +151,15 @@ class BoxInput extends StatelessWidget {
   final String name;
   final String? hint;
   final int maxLines;
+  final TextEditingController? controller;
 
-  const BoxInput({super.key, required this.name, this.hint, this.maxLines = 1});
+  const BoxInput({
+    super.key,
+    required this.name,
+    this.hint,
+    this.maxLines = 1,
+    this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +173,7 @@ class BoxInput extends StatelessWidget {
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           TextField(
+            controller: controller,
             maxLines: maxLines,
             decoration: InputDecoration(
               hintText: hint ?? name,

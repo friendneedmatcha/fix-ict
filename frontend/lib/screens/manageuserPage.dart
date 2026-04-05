@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/userModel.dart';
+import 'package:frontend/providers/userProvider.dart';
+import 'package:frontend/screens/addUserPage.dart';
+import 'package:frontend/screens/editUserPage.dart';
+import 'package:provider/provider.dart';
 
-class Manageuserpage extends StatelessWidget {
+class Manageuserpage extends StatefulWidget {
   const Manageuserpage({super.key});
 
   @override
+  State<Manageuserpage> createState() => _ManageuserpageState();
+}
+
+class _ManageuserpageState extends State<Manageuserpage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<Userprovider>(context, listen: false).fetchAllUsers();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<Userprovider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -20,30 +39,27 @@ class Manageuserpage extends StatelessWidget {
         backgroundColor: Colors.white,
       ),
       body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 40),
-          children: [
-            _dataUser(fname: "Nong", lname: "Ice", role: "User"),
-            _dataUser(fname: "Nong", lname: "Ice", role: "User"),
-            _dataUser(fname: "Wichapon", lname: "Akarak", role: "User"),
-            _dataUser(fname: "Baby", lname: "Boat", role: "Admin"),
-            _dataUser(fname: "Nong", lname: "Ice", role: "User"),
-            _dataUser(fname: "Baby", lname: "Boat", role: "Admin"),
-            _dataUser(fname: "Nong", lname: "Ice", role: "User"),
-            _dataUser(fname: "Baby", lname: "Boat", role: "Admin"),
-            _dataUser(fname: "Nong", lname: "Ice", role: "User"),
-            _dataUser(fname: "Baby", lname: "Boat", role: "Admin"),
-            _dataUser(fname: "Nong", lname: "Ice", role: "User"),
-            _dataUser(fname: "Nong", lname: "Ice", role: "User"),
-            _dataUser(fname: "Nong", lname: "Ice", role: "User"),
-          ],
-        ),
+        child: userProvider.isLoading
+            ? Center(child: CircularProgressIndicator(color: Color(0xFF105D38)))
+            : userProvider.error != null
+            ? Center(child: Text(userProvider.error!))
+            : ListView(
+                padding: EdgeInsets.only(left: 40, right: 40, bottom: 100),
+                children: userProvider.users
+                    .map((user) => _dataUser(user: user))
+                    .toList(),
+              ),
       ),
       floatingActionButton: SizedBox(
         width: 70,
         height: 70,
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddUserPage()),
+            );
+          },
           backgroundColor: Colors.white,
           elevation: 0,
           shape: CircleBorder(
@@ -57,15 +73,8 @@ class Manageuserpage extends StatelessWidget {
 }
 
 class _dataUser extends StatelessWidget {
-  final String fname;
-  final String lname;
-  final String role;
-  const _dataUser({
-    super.key,
-    required this.fname,
-    required this.lname,
-    required this.role,
-  });
+  final Usermodel user;
+  const _dataUser({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +106,7 @@ class _dataUser extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        "$fname $lname",
+                        "${user.firstName} ${user.lastName}",
                         style: TextStyle(
                           fontFamily: "IBM",
                           fontWeight: FontWeight.w500,
@@ -119,12 +128,12 @@ class _dataUser extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          role,
+                          user.role ?? "USER",
                           style: TextStyle(
                             fontFamily: "IBM",
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
-                            color: role == "User"
+                            color: user.role == "USER"
                                 ? Color(0xFF8F92A1)
                                 : Color(0xFFEA0000),
                           ),
@@ -135,11 +144,54 @@ class _dataUser extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditUserPage(user: user),
+                    ),
+                  );
+                },
                 icon: Icon(Icons.edit, size: 30, color: Color(0xFF105D38)),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text("ยืนยันการลบ"),
+                      content: Text(
+                        "ต้องการลบ ${user.firstName} ${user.lastName} ใช่หรือไม่?",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: Text("ยกเลิก"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: Text(
+                            "ลบ",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true) {
+                    final success = await Provider.of<Userprovider>(
+                      context,
+                      listen: false,
+                    ).deleteUser(user.id!);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(success ? "ลบสำเร็จ" : "ลบไม่สำเร็จ"),
+                      ),
+                    );
+                  }
+                },
                 icon: Icon(
                   Icons.cancel_outlined,
                   size: 30,
