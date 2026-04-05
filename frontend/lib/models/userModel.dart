@@ -6,6 +6,7 @@ class Usermodel {
   String? password;
   String? role;
   String? tel;
+  String? profileImage;
 
   Usermodel({
     this.id,
@@ -15,6 +16,7 @@ class Usermodel {
     this.password,
     this.role,
     this.tel,
+    this.profileImage,
   });
 
   factory Usermodel.fromJson(Map<String, dynamic> json) {
@@ -25,17 +27,19 @@ class Usermodel {
       email: json['email'],
       role: json['role'],
       tel: json['tel'],
+      profileImage: json['profileImage'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id ?? null,
+      'id': id,
       'email': email,
       'password': password,
       'firstName': firstName ?? null,
       'lastName': lastName ?? null,
       'tel': tel ?? null,
+      'profileImage': profileImage,
     };
   }
 }

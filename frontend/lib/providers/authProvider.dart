@@ -18,6 +18,11 @@ class AuthProvider extends ChangeNotifier {
 
   final _authService = AuthService();
 
+  void updateUserData(Usermodel newUser) {
+    _userdata = newUser;
+    notifyListeners(); 
+  }
+
   Future<bool> login(Usermodel user) async {
     _loading = true;
     _error = null;
@@ -32,6 +37,38 @@ class AuthProvider extends ChangeNotifier {
       _isAuthenticate = false;
       return false;
     } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> register(Usermodel user) async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _userdata = await _authService.register(user);
+      _isAuthenticate = true;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> logout() async {
+    _loading = true;
+    notifyListeners();
+
+    try {
+      await _authService.logout();
+    } finally {
+      _userdata = null;
+      _isAuthenticate = false;
       _loading = false;
       notifyListeners();
     }

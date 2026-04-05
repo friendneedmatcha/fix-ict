@@ -39,6 +39,49 @@ class AuthService {
     }
   }
 
+  Future<Usermodel> register(Usermodel user) async {
+    try {
+      final res = await dio.post("$_apiUrl/auth/register", data: user.toJson());
+      print(res.data);
+      if (res.statusCode == 201 || res.statusCode == 200) {
+        final prefs = await SharedPreferences.getInstance();
+        if (res.data['data'] != null && res.data['data']['token'] != null) {
+          await prefs.setString(
+            'accessToken',
+            res.data['data']['token']['accessToken'],
+          );
+          await prefs.setString(
+            'refreshToken',
+            res.data['data']['token']['refreshToken'],
+          );
+        }
+        // ---------------------------------------
+        return Usermodel.fromJson(res.data['data']['user']);
+      } else {
+        throw Exception('Registration failed');
+      }
+    } on DioException catch (e) {
+      print(e.response?.data);
+      throw Exception(e.response?.data['message'] ?? 'Registration failed');
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final refreshToken = prefs.getString('refreshToken');
+
+      await dio.post(
+        "$_apiUrl/auth/logout",
+        options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
+      );
+    } catch (e) {
+      print("Server logout error: $e");
+    } finally {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+    }
+  }
   // Future<Usermodel> logout() async {
   //   try {
   //     final res = await dio.post(

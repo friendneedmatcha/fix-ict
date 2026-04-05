@@ -41,24 +41,29 @@ class Aboutuspage extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _cardTeam(
-                name: "Thanapat",
-                id: "6787037",
-                nameIG: "thanapat.b_",
-                email: "thanapat.jul",
-              ),
-              SizedBox(height: 20),
-              _cardTeam(
-                name: "Wichapon",
-                id: "6787075",
-                nameIG: "ice_wcp",
-                email: "wichapon.aka",
-              ),
-            ],
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _cardTeam(
+                  name: "Thanapat",
+                  id: "6787037",
+                  nameIG: "thanapat.b_",
+                  email: "thanapat.jul",
+                  imagePath: "assets/profile/ice.jpg",
+                ),
+                SizedBox(height: 20),
+                _cardTeam(
+                  name: "Wichapon",
+                  id: "6787075",
+                  nameIG: "ice_wcp",
+                  email: "wichapon.aka",
+                  imagePath: "assets/profile/ice.jpg",
+                ),
+                SizedBox(height: 50,)
+              ],
+            ),
           ),
         ),
       ),
@@ -71,12 +76,14 @@ class _cardTeam extends StatelessWidget {
   final String id;
   final String nameIG;
   final String email;
+  final String? imagePath;
   const _cardTeam({
     super.key,
     required this.name,
     required this.id,
     required this.nameIG,
     required this.email,
+    this.imagePath,
   });
 
   @override
@@ -172,9 +179,14 @@ class _cardTeam extends StatelessWidget {
         Positioned(
           top: 0,
           child: CircleAvatar(
-            backgroundColor: Color(0xFFB4F6CE),
-            radius: 74,
-            child: CircleAvatar(backgroundColor: Color(0xFF105D38), radius: 70),
+            backgroundColor: Color(0xFF105D38),
+            radius: 70,
+            backgroundImage: (imagePath != null && imagePath!.isNotEmpty)
+                ? AssetImage(imagePath!)
+                : null,
+            child: (imagePath == null || imagePath!.isEmpty)
+                ? Icon(Icons.person, size: 70, color: Colors.white)
+                : null,
           ),
         ),
       ],
