@@ -31,15 +31,28 @@ class Usermodel {
     );
   }
 
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'id': id ,
+  //     'email': email,
+  //     'password': password,
+  //     'firstName': firstName ?? null,
+  //     'lastName': lastName ?? null,
+  //     'tel': tel ?? null,
+  //     'profileImage': profileImage,
+  //   };
+  // }
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'email': email,
-      'password': password,
-      'firstName': firstName ?? null,
-      'lastName': lastName ?? null,
-      'tel': tel ?? null,
-      'profileImage': profileImage,
-    };
+    final Map<String, dynamic> data = {};
+
+    if (email != null) data['email'] = email;
+    if (password != null) data['password'] = password;
+    if (firstName != null) data['firstName'] = firstName;
+    if (lastName != null) data['lastName'] = lastName;
+    if (tel != null) data['tel'] = tel;
+    if (profileImage != null) data['profileImage'] = profileImage;
+    if (role != null) data['role'] = role;
+
+    return data;
   }
 }

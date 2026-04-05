@@ -51,12 +51,11 @@ export class UserService {
   }
 
   async update(id: string, data: UserDto, file: Express.Multer.File) {
-    // ✅ เช็ค email ซ้ำโดยยกเว้น id ตัวเอง
     if (data.email) {
       const checkMail = await this.prisma.user.findFirst({
         where: {
           email: data.email,
-          NOT: { id: +id }, // ✅ ยกเว้น user คนนี้
+          NOT: { id: +id },
         },
       });
       if (checkMail) throw new ConflictException('dup mail');
@@ -70,6 +69,7 @@ export class UserService {
       if (data.tel) updateData.tel = data.tel;
       if (data.password)
         updateData.password = await bcrypt.hash(data.password, 10);
+      if (data.role) updateData.role = data.role;
       if (file) updateData.profileImage = file.filename;
 
       const update = await this.prisma.user.update({

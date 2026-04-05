@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/userModel.dart';
+import 'package:frontend/providers/userProvider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class AddUserPage extends StatefulWidget {
   const AddUserPage({super.key});
@@ -11,37 +14,76 @@ class AddUserPage extends StatefulWidget {
 
 class _AddUserPageState extends State<AddUserPage> {
   String? _selectedCat;
-
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _telController = TextEditingController();
   // final List<String> _priOp = ["ต่ำ", "กลาง", 'สูง'];
   final List<String> _catOp = ["USER", 'ADMIN'];
 
   @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _telController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSave() async {
+    if (_firstNameController.text.isEmpty ||
+        _lastNameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _selectedCat == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('กรุณากรอกข้อมูลให้ครบ')));
+      return;
+    }
+
+    final userProvider = Provider.of<Userprovider>(context, listen: false);
+
+    final newUser = Usermodel(
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      role: _selectedCat,
+      tel: _telController.text.trim(),
+    );
+
+    final success = await userProvider.createUser(newUser);
+
+    if (!mounted) return;
+
+    if (success) {
+      await userProvider.fetchAllUsers();
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userProvider.error ?? 'เพิ่มผู้ใช้ไม่สำเร็จ')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<Userprovider>(context);
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "เพิ่มผู้ใช้งาน",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: const [
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        "เพิ่มผู้ใช้งาน",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // SizedBox(width: 40),
-                ],
-              ),
-            ),
-
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.only(right: 20, left: 20, top: 25),
@@ -50,15 +92,11 @@ class _AddUserPageState extends State<AddUserPage> {
                   children: [
                     const SizedBox(height: 15),
 
-                    BoxInput(name: "ชื่อ"),
-                    const SizedBox(height: 10),
-
-                    BoxInput(name: "นามสกุล"),
-                    const SizedBox(height: 10),
-                    BoxInput(name: "อีเมล"),
-                    const SizedBox(height: 10),
-                    BoxInput(name: "รหัสผ่าน"),
-                    const SizedBox(height: 10),
+                    BoxInput(name: "ชื่อ", controller: _firstNameController),
+                    BoxInput(name: "นามสกุล", controller: _lastNameController),
+                    BoxInput(name: "อีเมล", controller: _emailController),
+                    BoxInput(name: "รหัสผ่าน", controller: _passwordController),
+                    BoxInput(name: "เบอร์โทร", controller: _telController),
 
                     BoxDropdown(
                       name: "บทบาท",
@@ -82,7 +120,7 @@ class _AddUserPageState extends State<AddUserPage> {
                           ),
                           elevation: 0,
                         ),
-                        onPressed: () => print("55"),
+                        onPressed: userProvider.isLoading ? null : _handleSave,
                         child: Text(
                           "บันทึก",
                           style: TextStyle(
@@ -107,8 +145,15 @@ class BoxInput extends StatelessWidget {
   final String name;
   final String? hint;
   final int maxLines;
+  final TextEditingController? controller;
 
-  const BoxInput({super.key, required this.name, this.hint, this.maxLines = 1});
+  const BoxInput({
+    super.key,
+    required this.name,
+    this.hint,
+    this.maxLines = 1,
+    this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +167,7 @@ class BoxInput extends StatelessWidget {
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           TextField(
+            controller: controller,
             maxLines: maxLines,
             decoration: InputDecoration(
               hintText: hint ?? name,

@@ -45,4 +45,92 @@ class Userservice {
       throw Exception(e.response?.data['message'] ?? 'Update failed');
     }
   }
+
+  Future<List<Usermodel>> getAllUsers() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      final res = await dio.get(
+        "$_apiUrl/user",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (res.statusCode == 200) {
+        return (res.data as List)
+            .map((item) => Usermodel.fromJson(item))
+            .toList();
+      }
+      throw Exception('Failed to load users');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to load users');
+    }
+  }
+
+  Future<void> createUser(Usermodel user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      final res = await dio.post(
+        "$_apiUrl/user",
+        data: user.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (res.statusCode != 200 && res.statusCode != 201) {
+        throw Exception('Create user failed');
+      }
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Create user failed');
+    }
+  }
+
+  Future<Usermodel> updateUser(int id, Usermodel user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      // ✅ ส่งเฉพาะ field ที่ backend รับ แทนการใช้ toJson()
+      final Map<String, dynamic> data = {};
+      if (user.firstName != null) data['firstName'] = user.firstName;
+      if (user.lastName != null) data['lastName'] = user.lastName;
+      if (user.email != null) data['email'] = user.email;
+      if (user.tel != null) data['tel'] = user.tel;
+      if (user.password != null) data['password'] = user.password;
+      if (user.role != null) data['role'] = user.role;
+
+      final res = await dio.put(
+        "$_apiUrl/user/$id",
+        data: data,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return Usermodel.fromJson(res.data['data']);
+      }
+      throw Exception('Update failed');
+    } on DioException catch (e) {
+      print(e.response?.data);
+      throw Exception(e.response?.data['message'] ?? 'Update failed');
+    }
+  }
+
+  Future<void> deleteUser(int id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      final res = await dio.delete(
+        "$_apiUrl/user/$id",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (res.statusCode != 200 && res.statusCode != 201) {
+        throw Exception('Delete failed');
+      }
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Delete failed');
+    }
+  }
 }

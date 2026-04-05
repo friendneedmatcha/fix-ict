@@ -51,6 +51,8 @@ export class UserController {
     return this.userService.delete(id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Post()
   create(@Body() data: UserCreateDto) {
     return this.userService.create(data);

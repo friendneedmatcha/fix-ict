@@ -10,7 +10,6 @@ class Userprovider extends ChangeNotifier {
   bool _isAuthenticate = false;
   String? _error;
 
-
   Usermodel? get userdata => _userdata;
   bool get isLoading => _loading;
   bool get isAuthenticate => _isAuthenticate;
@@ -31,7 +30,7 @@ class Userprovider extends ChangeNotifier {
 
       _userdata = updatedUser;
 
-      notifyListeners(); 
+      notifyListeners();
       return true;
     } catch (e) {
       _error = e.toString();
@@ -39,6 +38,76 @@ class Userprovider extends ChangeNotifier {
     } finally {
       _loading = false;
       notifyListeners();
+    }
+  }
+
+  List<Usermodel> _users = [];
+  List<Usermodel> get users => _users;
+
+  Future<void> fetchAllUsers() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _users = await _userService.getAllUsers();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> createUser(Usermodel user) async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _userService.createUser(user);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> updateUser(int id, Usermodel user) async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final updated = await _userService.updateUser(id, user);
+      final index = _users.indexWhere((u) => u.id == id);
+      if (index != -1) _users[index] = updated;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> deleteUser(int id) async {
+    _error = null;
+
+    try {
+      await _userService.deleteUser(id);
+      _users.removeWhere((u) => u.id == id);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
     }
   }
 }
