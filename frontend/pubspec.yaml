@@ -68,6 +68,7 @@ flutter:
   assets:
     - assets/img/cardhis.png
     - assets/profile/ice.jpg
+    - assets/profile/boat.jpeg
     - .env
     # - images/a_dot_ham.jpeg
 

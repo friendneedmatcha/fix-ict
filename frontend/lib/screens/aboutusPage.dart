@@ -51,7 +51,7 @@ class Aboutuspage extends StatelessWidget {
                   id: "6787037",
                   nameIG: "thanapat.b_",
                   email: "thanapat.jul",
-                  imagePath: "assets/profile/ice.jpg",
+                  imagePath: "assets/profile/boat.jpeg",
                 ),
                 SizedBox(height: 20),
                 _cardTeam(
@@ -61,7 +61,7 @@ class Aboutuspage extends StatelessWidget {
                   email: "wichapon.aka",
                   imagePath: "assets/profile/ice.jpg",
                 ),
-                SizedBox(height: 50,)
+                SizedBox(height: 50),
               ],
             ),
           ),

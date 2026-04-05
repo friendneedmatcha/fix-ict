@@ -4,7 +4,7 @@ import 'package:frontend/providers/userProvider.dart';
 import 'package:frontend/screens/formPage.dart';
 import 'package:frontend/screens/historryPaage.dart';
 import 'package:frontend/screens/homePage.dart';
-import 'package:frontend/screens/loginPage.dart';
+import 'package:frontend/screens/auth/loginPage.dart';
 import 'package:frontend/screens/profilePage.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
