@@ -91,7 +91,7 @@ class _AdminNavbarState extends State<AdminNabar> {
                 color: isMid != null
                     ? Colors.white
                     : isActive
-                    ? Colors.green
+                    ? Color(0xFF105D38)
                     : Colors.grey,
                 size: 24,
               ),
@@ -103,7 +103,7 @@ class _AdminNavbarState extends State<AdminNabar> {
                   color: isMid != null
                       ? Colors.white
                       : isActive
-                      ? Colors.green
+                      ? Color(0xFF105D38)
                       : Colors.grey,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                 ),
