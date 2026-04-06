@@ -10,6 +10,10 @@ class ReportProvider extends ChangeNotifier {
   bool _loading = false;
   String? _error;
 
+  ReportModel? _selectedReport;
+
+  ReportModel? get selectedReport => _selectedReport;
+
   List<ReportModel> get topFive => _topFive;
   bool get isLoading => _loading;
   String? get error => _error;
@@ -96,6 +100,21 @@ class ReportProvider extends ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       return false;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchById(int id) async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _selectedReport = await _reportService.getById(id);
+    } catch (e) {
+      _error = e.toString();
     } finally {
       _loading = false;
       notifyListeners();

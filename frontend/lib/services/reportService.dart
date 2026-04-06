@@ -153,4 +153,24 @@ class ReportService {
       throw Exception(e.response?.data['message'] ?? 'Create report failed');
     }
   }
+
+  Future<ReportModel> getById(int id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      final res = await dio.get(
+        "$_apiUrl/report/$id",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (res.statusCode == 200) {
+        return ReportModel.fromJson(res.data);
+      }
+
+      throw Exception('Failed to load report');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to load report');
+    }
+  }
 }

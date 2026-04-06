@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-
-class TrackingItem {
-  final String title;
-  final String dateTime;
-
-  const TrackingItem({required this.title, required this.dateTime});
-}
+import 'package:frontend/models/reportModel.dart';
+import 'package:frontend/providers/reportProvider.dart';
+import 'package:frontend/screens/history/historyDetailPage.dart';
+import 'package:provider/provider.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -16,19 +13,18 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
-
-  final List<TrackingItem> _allItems = const [
-    TrackingItem(title: 'ABC123456', dateTime: 'Dec 2, 2020 3:30PM'),
-    TrackingItem(title: 'XYZ999888', dateTime: 'Dec 3, 2020 4:00PM'),
-    TrackingItem(title: 'TH123456789', dateTime: 'Dec 4, 2020 1:20PM'),
-  ];
-
-  List<TrackingItem> _filteredItems = [];
+  List<ReportModel> _filteredItems = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredItems = _allItems;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final provider = context.read<ReportProvider>();
+      await provider.fetchAll();
+      setState(() {
+        _filteredItems = List<ReportModel>.from(provider.reports);
+      });
+    });
   }
 
   @override
@@ -37,31 +33,34 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
-  void _search() {
+  void _search(List<ReportModel> allReports) {
     final query = _searchController.text.toLowerCase();
-
     setState(() {
-      _filteredItems = _allItems.where((item) {
-        return item.title.toLowerCase().contains(query);
+      _filteredItems = allReports.where((item) {
+        final title = item.title?.toLowerCase() ?? '';
+        return title.contains(query);
       }).toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<ReportProvider>();
+    final allReports = provider.reports;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF105D38)),
           onPressed: () => Navigator.pop(context),
         ),
-        centerTitle: true, // ทำให้ title อยู่กลาง
+        centerTitle: true,
         title: const Text(
           "ค้นหา",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black, // ปรับสีตามต้องการ
+            color: Colors.black,
           ),
         ),
       ),
@@ -89,12 +88,11 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                       child: TextField(
                         controller: _searchController,
-                        onChanged: (value) => _search(), // 🔥 realtime search
+                        onChanged: (value) => _search(allReports),
                         decoration: const InputDecoration(
-                          hintText: 'Tracking Number',
+                          hintText: 'ค้นหาชื่อรายงาน...',
                           hintStyle: TextStyle(
                             color: Color(0xFFAAAAAA),
-                            // color: Colors.black,
                             fontSize: 15,
                           ),
                           border: InputBorder.none,
@@ -107,9 +105,8 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
                   const SizedBox(width: 10),
-
                   GestureDetector(
-                    onTap: _search,
+                    onTap: () => _search(allReports),
                     child: Container(
                       width: 52,
                       height: 52,
@@ -131,7 +128,20 @@ class _SearchPageState extends State<SearchPage> {
             const SizedBox(height: 20),
 
             Expanded(
-              child: _filteredItems.isEmpty
+              child: provider.isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF2E7D32),
+                      ),
+                    )
+                  : provider.error != null
+                  ? Center(
+                      child: Text(
+                        'เกิดข้อผิดพลาด: ${provider.error}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    )
+                  : _filteredItems.isEmpty
                   ? const Center(
                       child: Text(
                         'ไม่พบข้อมูล',
@@ -144,7 +154,7 @@ class _SearchPageState extends State<SearchPage> {
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final item = _filteredItems[index];
-                        return _TrackingCard(item: item);
+                        return _ReportCard(item: item);
                       },
                     ),
             ),
@@ -155,16 +165,22 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
-class _TrackingCard extends StatelessWidget {
-  final TrackingItem item;
+class _ReportCard extends StatelessWidget {
+  final ReportModel item;
 
-  const _TrackingCard({required this.item});
+  const _ReportCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
+    final fullName = '${item.userFirstName ?? ''} ${item.userLastName ?? ''}'
+        .trim();
+    final dateStr = item.createdAt != null
+        ? '${item.createdAt!.day}/${item.createdAt!.month}/${item.createdAt!.year}'
+        : '-';
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      margin: EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -183,7 +199,7 @@ class _TrackingCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.title,
+                  item.title ?? '-',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -191,7 +207,15 @@ class _TrackingCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  item.dateTime,
+                  fullName.isNotEmpty ? fullName : '-',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF9E9E9E),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  dateStr,
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xFF9E9E9E),
@@ -200,14 +224,16 @@ class _TrackingCard extends StatelessWidget {
               ],
             ),
           ),
-
           GestureDetector(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Tracking: ${item.title}')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => Historydetailpage(reportId: item.id!),
+                ),
               );
             },
-            child: const Text(
+            child: Text(
               'ดูรายละเอียด',
               style: TextStyle(
                 fontSize: 13,
