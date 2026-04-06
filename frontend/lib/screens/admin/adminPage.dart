@@ -3,7 +3,7 @@ import 'package:frontend/providers/authProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
 import 'package:frontend/screens/admin/manage_user/manageuserPage.dart';
 import 'package:frontend/screens/history/historyPage.dart';
-import 'package:frontend/screens/report/reportlistPage.dart';
+import 'package:frontend/screens/report/reportListPage.dart';
 import 'package:provider/provider.dart';
 
 class AdminPage extends StatefulWidget {

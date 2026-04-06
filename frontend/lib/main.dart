@@ -4,9 +4,9 @@ import 'package:frontend/providers/categoryProvider.dart';
 import 'package:frontend/providers/feedbackProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
 import 'package:frontend/providers/userProvider.dart';
-import 'package:frontend/screens/admin_screen.dart';
+import 'package:frontend/screens/adminScreen.dart';
 import 'package:frontend/screens/auth/loginPage.dart';
-import 'package:frontend/screens/user_screen.dart';
+import 'package:frontend/screens/userScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

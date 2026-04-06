@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/admin/adminPage.dart';
 import 'package:frontend/screens/history/historyPage.dart';
-import 'package:frontend/screens/report/reportlistPage.dart';
+import 'package:frontend/screens/report/reportListPage.dart';
 import 'package:frontend/screens/user/profilePage.dart';
-import 'package:frontend/widgets/admin_navbar.dart';
+import 'package:frontend/widgets/adminNavbar.dart';
 
 class AdminMainScreen extends StatefulWidget {
   const AdminMainScreen({super.key});

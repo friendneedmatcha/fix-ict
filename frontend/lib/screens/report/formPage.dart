@@ -267,10 +267,10 @@ class _FormPageState extends State<FormPage> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("บันทึกสำเร็จ")),
                       );
-                      Navigator.pushAndRemoveUntil(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const HistoryPage()),
-                        (route) => false,
+                        // (route) => false,
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/providers/authProvider.dart';
-import 'package:frontend/screens/user/user_home_page.dart';
+import 'package:frontend/screens/user/userHomePage.dart';
 
 class Registerpage extends StatefulWidget {
   final AuthProvider authProvider;
