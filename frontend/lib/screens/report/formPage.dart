@@ -22,7 +22,7 @@ class _FormPageState extends State<FormPage> {
     super.initState();
 
     Future.microtask(() {
-      Provider.of<Categoryprovider>(context, listen: false).getAll();
+      Provider.of<CategoryProvider>(context, listen: false).fetchAll();
     });
   }
 
@@ -90,7 +90,7 @@ class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final categoryProvider = Provider.of<Categoryprovider>(context);
+    final categoryProvider = Provider.of<CategoryProvider>(context);
     String img =
         "http://localhost:3000/uploads/${authProvider.userdata?.profileImage}";
     return Scaffold(
@@ -192,13 +192,12 @@ class _FormPageState extends State<FormPage> {
                     const SizedBox(height: 10),
 
                     categoryProvider.isLoading
-                        ? const CircularProgressIndicator() // 👈 loading state
+                        ? const CircularProgressIndicator()
                         : BoxDropdown(
                             name: "หมวดหมู่",
                             value: _selectedCat,
                             hintText: 'เลือกหมวดหมู่',
-                            categoryItems:
-                                categoryProvider.categories, // 👈 ใช้ข้อมูลจริง
+                            categoryItems: categoryProvider.categories,
                             onChanged: (val) =>
                                 setState(() => _selectedCat = val),
                           ),
@@ -279,8 +278,10 @@ class _FormPageState extends State<FormPage> {
                             location: locationCon.text,
                             priority: _selectedPriority,
                             description: detailCon.text,
-                            userId: authProvider.userdata?.id.toString(),
-                            categoryId: _selectedCat,
+                            userId: authProvider.userdata?.id,
+                            categoryId: _selectedCat != null
+                                ? int.parse(_selectedCat!)
+                                : null,
                           );
 
                           final success = await reportProvider.createReport(

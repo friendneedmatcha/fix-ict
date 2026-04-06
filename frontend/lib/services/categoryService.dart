@@ -39,7 +39,7 @@ class CategoryService {
       );
 
       if (res.statusCode == 200) {
-        return (res.data as List)
+        return (res.data['data'] as List)
             .map((item) => Categorymodel.fromJson(item))
             .toList();
       }
