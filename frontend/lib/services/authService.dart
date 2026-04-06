@@ -15,6 +15,7 @@ class AuthService {
         data: {'email': user.email, 'password': user.password},
         // data: user.toJson(),
       );
+      print("$_apiUrl/auth/login");
       print(res.data['data']['token']['accessToken']);
       print(res.data['data']['token']['refreshToken']);
       // print(res);

@@ -120,6 +120,7 @@ class Userservice {
       if (user.password != null) data['password'] = user.password;
       if (user.role != null) data['role'] = user.role;
 
+      print(user.profileImage);
       final res = await dio.put(
         "$_apiUrl/user/$id",
         data: data,

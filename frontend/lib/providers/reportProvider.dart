@@ -66,7 +66,7 @@ class ReportProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> createReport(ReportModel report, {File? imageFile}) async {
+  Future<bool> createReport(ReportModel report, {XFile? imageFile}) async {
     _loading = true;
     _error = null;
     notifyListeners();

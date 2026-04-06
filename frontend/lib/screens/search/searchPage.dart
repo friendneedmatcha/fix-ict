@@ -57,10 +57,10 @@ class _SearchPageState extends State<SearchPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF105D38)),
-          onPressed: () => Navigator.pop(context),
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF105D38)),
+        //   onPressed: () => Navigator.pop(context),
+        // ),
         centerTitle: true,
         title: const Text(
           "ค้นหา",

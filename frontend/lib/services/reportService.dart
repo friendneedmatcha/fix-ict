@@ -131,7 +131,7 @@ class ReportService {
 
   Future<ReportModel> createReport(
     ReportModel report, {
-    File? imageFile,
+    XFile? imageFile,
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -147,10 +147,8 @@ class ReportService {
       };
 
       if (imageFile != null) {
-        map["file"] = await MultipartFile.fromFile(
-          imageFile.path,
-          filename: imageFile.path.split('/').last,
-        );
+        final bytes = await imageFile.readAsBytes();
+        map["file"] = MultipartFile.fromBytes(bytes, filename: imageFile.name);
       }
 
       FormData formData = FormData.fromMap(map);
