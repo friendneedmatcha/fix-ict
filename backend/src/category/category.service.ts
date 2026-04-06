@@ -51,15 +51,18 @@ export class CategoryService {
 
   async findAll() {
     try {
-      const user = await this.prisma.category.findMany();
-      if (user.length == 0) {
-        throw new NotFoundException('Not Found user');
+      const cat = await this.prisma.category.findMany();
+      if (cat.length == 0) {
+        throw new NotFoundException('Not Found Category');
       }
 
-      return user;
+      return {
+        message: 'success',
+        data: cat,
+      };
     } catch (err) {
       if (err) {
-        throw new NotFoundException('Not Found user');
+        throw new NotFoundException('Not Found Category');
       }
       throw new InternalServerErrorException('Server Error');
     }

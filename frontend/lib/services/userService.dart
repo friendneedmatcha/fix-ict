@@ -1,13 +1,33 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/userModel.dart';
+import 'package:frontend/services/authService.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Userservice {
   final dio = Dio();
+  final _authService = AuthService();
   final String? _apiUrl = dotenv.env['API_URL'] ?? "http://10.5.55.154:3038";
 
+  Userservice() {
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (DioException error, ErrorInterceptorHandler handler) async {
+          if (error.response?.statusCode == 401) {
+            final newToken = await _authService.refreshAccessToken();
+            if (newToken != null) {
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer $newToken';
+              final response = await dio.fetch(error.requestOptions);
+              return handler.resolve(response);
+            }
+          }
+          return handler.next(error);
+        },
+      ),
+    );
+  }
   Future<Usermodel> updateProfile(
     int id,
     Usermodel user, {

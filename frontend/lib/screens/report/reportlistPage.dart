@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/reportModel.dart';
+import 'package:frontend/providers/categoryProvider.dart';
+import 'package:frontend/providers/reportProvider.dart';
+import 'package:frontend/screens/report/updatereportPage.dart';
+import 'package:provider/provider.dart';
 
 class Reportlistpage extends StatefulWidget {
   const Reportlistpage({super.key});
@@ -9,9 +14,58 @@ class Reportlistpage extends StatefulWidget {
 
 class _ReportlistpageState extends State<Reportlistpage> {
   String? category = "ทั้งหมด";
-  final List<String> categories = ['ทั้งหมด', 'สุดหล่อ', 'ท่อหมก', 'ทรงเชง'];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ReportProvider>(context, listen: false).fetchAll();
+      Provider.of<CategoryProvider>(context, listen: false).fetchAll();
+    });
+  }
+
+  String _statusText(String? status) {
+    switch (status) {
+      case 'PENDING':
+        return 'รอดำเนินการ';
+      case 'IN_PROGRESS':
+        return 'กำลังดำเนินการ';
+      case 'SUCCESS':
+        return 'เสร็จสิ้น';
+      default:
+        return status ?? '-';
+    }
+  }
+
+  Color _statusColor(String? status) {
+    switch (status) {
+      case 'PENDING':
+        return Color(0xFFFF9800);
+      case 'IN_PROGRESS':
+        return Color(0xFF00E35A);
+      case 'SUCCESS':
+        return Color(0xFF2196F3);
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final reportProvider = Provider.of<ReportProvider>(context);
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+
+    final filteredReports = reportProvider.reports
+        .where((r) => r.status != 'SUCCESS')
+        .where(
+          (r) => category == "ทั้งหมด" || r.categoryId.toString() == category,
+        )
+        .toList();
+
+    final categoryItems = [
+      "ทั้งหมด",
+      ...categoryProvider.categories.map((c) => c.id.toString()),
+    ];
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -27,112 +81,91 @@ class _ReportlistpageState extends State<Reportlistpage> {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Center(
-          child: ListView(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "เลือกหมวดหมู่ :",
-                      style: TextStyle(
-                        fontFamily: "IBM",
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: SizedBox(
-                        height: 34,
-                        child: DropdownButtonFormField(
+        child: reportProvider.isLoading
+            ? Center(child: CircularProgressIndicator(color: Color(0xFF105D38)))
+            : reportProvider.error != null
+            ? Center(child: Text(reportProvider.error!))
+            : ListView(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "เลือกหมวดหมู่ :",
                           style: TextStyle(
                             fontFamily: "IBM",
-                            color: Colors.black,
                             fontSize: 16,
+                            fontWeight: FontWeight.w700,
                           ),
-                          value: category,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade400,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          items: categories.map((String v) {
-                            return DropdownMenuItem(value: v, child: Text(v));
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              category = value;
-                            });
-                          },
                         ),
-                      ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: SizedBox(
+                            height: 34,
+                            child: DropdownButtonFormField<String>(
+                              style: TextStyle(
+                                fontFamily: "IBM",
+                                color: Colors.black,
+                                fontSize: 16,
+                              ),
+                              value: category,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade400,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: Colors.black,
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                              items: [
+                                DropdownMenuItem(
+                                  value: "ทั้งหมด",
+                                  child: Text("ทั้งหมด"),
+                                ),
+                                ...categoryProvider.categories.map(
+                                  (c) => DropdownMenuItem(
+                                    value: c.id.toString(),
+                                    child: Text(c.name ?? "-"),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  category = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 20),
+                  ...filteredReports.map(
+                    (report) => _dataShow(
+                      title: report.title ?? "-",
+                      date:
+                          report.createdAt?.toString().substring(0, 16) ?? "-",
+                      status: _statusText(report.status),
+                      statusColor: _statusColor(report.status),
+                      report: report,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 20),
-              _dataShow(
-                title: "พังหมดแล้ว",
-                date: "Dec 2, 2020 3:30PM",
-                status: "กำลังดำเนินการ",
-                statusColor: Color(0xFF00E35A),
-              ),
-              _dataShow(
-                title: "คับ",
-                date: "Dec 2, 2020 3:30PM",
-                status: "กำลังดำเนินการ",
-                statusColor: Color(0xFF00E35A),
-              ),
-              _dataShow(
-                title: "แล้ว",
-                date: "Dec 2, 2020 3:30PM",
-                status: "กำลังดำเนินการ",
-                statusColor: Color(0xFF00E35A),
-              ),
-              _dataShow(
-                title: "พอ",
-                date: "Dec 2, 2020 3:30PM",
-                status: "กำลังดำเนินการ",
-                statusColor: Color(0xFF00E35A),
-              ),
-              _dataShow(
-                title: "พังหมดแล้ว",
-                date: "Dec 2, 2020 3:30PM",
-                status: "กำลังดำเนินการ",
-                statusColor: Color(0xFF00E35A),
-              ),
-              _dataShow(
-                title: "พังหมดแล้ว",
-                date: "Dec 2, 2020 3:30PM",
-                status: "กำลังดำเนินการ",
-                statusColor: Color(0xFF00E35A),
-              ),
-              _dataShow(
-                title: "พังหมดแล้ว",
-                date: "Dec 2, 2020 3:30PM",
-                status: "กำลังดำเนินการ",
-                statusColor: Color(0xFF00E35A),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -143,13 +176,16 @@ class _dataShow extends StatelessWidget {
   final String date;
   final String status;
   final Color statusColor;
+  final ReportModel report;
   final VoidCallback? onTap;
+
   const _dataShow({
     super.key,
     required this.title,
     required this.date,
     required this.status,
     required this.statusColor,
+    required this.report,
     this.onTap,
   });
 
@@ -235,7 +271,15 @@ class _dataShow extends StatelessWidget {
                   ),
                   Spacer(),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Updatereportpage(report: report),
+                        ),
+                      );
+                    },
                     style: OutlinedButton.styleFrom(
                       textStyle: TextStyle(
                         fontFamily: "IBM",

@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/providers/reportProvider.dart';
+import 'package:frontend/screens/history/historryPaage.dart';
+import 'package:frontend/screens/report/formPage.dart';
+import 'package:frontend/screens/search/searchPage.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class UserHomePage extends StatefulWidget {
   const UserHomePage({super.key});
@@ -9,7 +16,18 @@ class UserHomePage extends StatefulWidget {
 
 class _UserHomePageState extends State<UserHomePage> {
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => Provider.of<ReportProvider>(context, listen: false).fetchTop(),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final reportProvider = Provider.of<ReportProvider>(context);
+
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
       body: SafeArea(
@@ -23,7 +41,7 @@ class _UserHomePageState extends State<UserHomePage> {
                   children: [
                     SizedBox(height: 24),
                     Text(
-                      'Hello Witchapon Aka',
+                      'Hello ${authProvider.userdata?.firstName}',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -32,7 +50,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'สวัสดีตอนเช้าค่',
+                      'สวัสดีตอนเช้าคับ',
                       style: TextStyle(fontSize: 14, color: Color(0xFF9E9E9E)),
                     ),
                     SizedBox(height: 20),
@@ -56,19 +74,40 @@ class _UserHomePageState extends State<UserHomePage> {
                           _buildActionButton(
                             icon: Icons.handyman_outlined,
                             label: 'แจ้งซ่อม',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FormPage(),
+                                ),
+                              );
+                            },
                             showRightBorder: true,
                           ),
                           _buildActionButton(
                             icon: Icons.bar_chart_outlined,
                             label: 'ติดตาม',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SearchPage(),
+                                ),
+                              );
+                            },
                             showRightBorder: true,
                           ),
                           _buildActionButton(
                             icon: Icons.history_outlined,
                             label: 'ประวัติ',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HistoryPage(),
+                                ),
+                              );
+                            },
                             showRightBorder: false,
                           ),
                         ],
@@ -87,71 +126,74 @@ class _UserHomePageState extends State<UserHomePage> {
 
                     SizedBox(height: 14),
 
-                    Container(
-                      margin: EdgeInsets.only(bottom: 12),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
-                            blurRadius: 8,
-                            offset: Offset(9, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
+                    if (reportProvider.isLoading)
+                      Center(child: CircularProgressIndicator())
+                    else if (reportProvider.reportTop.isEmpty)
+                      Center(child: Text("ยังไม่มีรายการ"))
+                    else
+                      Column(
+                        children: reportProvider.reportTop.map((report) {
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 12),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
+                            ),
                             decoration: BoxDecoration(
-                              color: Color(0xFF105D38),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.check,
                               color: Colors.white,
-                              size: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "ทดสอบ",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black,
-                                  ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.04),
+                                  blurRadius: 8,
+                                  offset: Offset(2, 4),
                                 ),
-                                SizedBox(height: 4),
-                                Text(
-                                  "Dec 2, 2020 3:30PM",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color.from(
-                                      alpha: 1,
-                                      red: 0.62,
-                                      green: 0.62,
-                                      blue: 0.62,
-                                    ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF105D38),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(Icons.build, color: Colors.white),
+                                ),
+                                SizedBox(width: 20),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        report.title ?? "-",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        DateFormat('dd MMM yyyy, HH:mm').format(
+                                          DateTime.parse(
+                                            report.createdAt ?? "",
+                                          ),
+                                        ),
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          );
+                        }).toList(),
                       ),
-                    ),
                   ],
                 ),
               ),

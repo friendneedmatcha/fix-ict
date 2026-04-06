@@ -50,25 +50,25 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: const Color(0xFFF2F2F7),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF105D38)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true, // ทำให้ title อยู่กลาง
+        title: const Text(
+          "ค้นหา",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black, // ปรับสีตามต้องการ
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 20.0),
-              child: Center(
-                child: Text(
-                  'ค้นหา',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
