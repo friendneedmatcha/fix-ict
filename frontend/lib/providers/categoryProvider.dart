@@ -3,11 +3,11 @@ import 'package:frontend/models/categoryModel.dart';
 import 'package:frontend/services/categoryService.dart';
 
 class CategoryProvider extends ChangeNotifier {
-  List<CategoryModel> _categories = [];
+  List<Categorymodel> _categories = [];
   bool _loading = false;
   String? _error;
 
-  List<CategoryModel> get categories => _categories;
+  List<Categorymodel> get categories => _categories;
   bool get isLoading => _loading;
   String? get error => _error;
 

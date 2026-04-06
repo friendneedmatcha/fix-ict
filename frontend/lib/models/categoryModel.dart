@@ -1,10 +1,19 @@
-class CategoryModel {
+class Categorymodel {
   int? id;
   String? name;
 
-  CategoryModel({this.id, this.name});
+  Categorymodel({this.id, this.name});
 
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    return CategoryModel(id: json['id'], name: json['name']);
+  factory Categorymodel.fromJson(Map<String, dynamic> json) {
+    return Categorymodel(id: json['id'], name: json['name']);
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+
+    if (id != null) data['id'] = id;
+    if (name != null) data['name'] = name;
+
+    return data;
   }
 }

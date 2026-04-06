@@ -28,7 +28,7 @@ class CategoryService {
     );
   }
 
-  Future<List<CategoryModel>> getAll() async {
+  Future<List<Categorymodel>> getAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
@@ -40,7 +40,7 @@ class CategoryService {
 
       if (res.statusCode == 200) {
         return (res.data as List)
-            .map((item) => CategoryModel.fromJson(item))
+            .map((item) => Categorymodel.fromJson(item))
             .toList();
       }
       throw Exception('Failed to load categories');
