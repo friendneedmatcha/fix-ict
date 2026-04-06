@@ -42,6 +42,7 @@ export class ReportService {
           updates: {
             where: { status: 'SUCCESS' },
           },
+          feedback: true,
         },
       });
       return report;
@@ -76,6 +77,7 @@ export class ReportService {
           updates: {
             where: { status: 'SUCCESS' },
           },
+          feedback: true,
         },
       });
       if (!reportid) {

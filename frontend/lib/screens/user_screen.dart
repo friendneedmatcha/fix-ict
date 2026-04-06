@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/history/historryPaage.dart';
+import 'package:frontend/screens/history/historyPage.dart';
 import 'package:frontend/screens/search/searchPage.dart';
 import 'package:frontend/screens/user/profile/profilePage.dart';
 import 'package:frontend/screens/user/user_home_page.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/authProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
-import 'package:frontend/screens/history/historryPaage.dart';
+import 'package:frontend/screens/history/historyPage.dart';
 import 'package:frontend/screens/report/formPage.dart';
 import 'package:frontend/screens/search/searchPage.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +19,7 @@ class _UserHomePageState extends State<UserHomePage> {
   void initState() {
     super.initState();
     Future.microtask(
-      () => Provider.of<ReportProvider>(context, listen: false).fetchTop(),
+      () => Provider.of<ReportProvider>(context, listen: false).fetchTopFive(),
     );
   }
 
@@ -128,11 +128,11 @@ class _UserHomePageState extends State<UserHomePage> {
 
                     if (reportProvider.isLoading)
                       Center(child: CircularProgressIndicator())
-                    else if (reportProvider.reportTop.isEmpty)
+                    else if (reportProvider.topFive.isEmpty)
                       Center(child: Text("ยังไม่มีรายการ"))
                     else
                       Column(
-                        children: reportProvider.reportTop.map((report) {
+                        children: reportProvider.topFive.map((report) {
                           return Container(
                             margin: EdgeInsets.only(bottom: 12),
                             padding: EdgeInsets.symmetric(
@@ -176,11 +176,11 @@ class _UserHomePageState extends State<UserHomePage> {
                                       ),
                                       SizedBox(height: 4),
                                       Text(
-                                        DateFormat('dd MMM yyyy, HH:mm').format(
-                                          DateTime.parse(
-                                            report.createdAt ?? "",
-                                          ),
-                                        ),
+                                        report.createdAt != null
+                                            ? DateFormat(
+                                                'dd/MM/yyyy HH:mm',
+                                              ).format(report.createdAt!)
+                                            : "-",
                                         style: TextStyle(
                                           fontSize: 13,
                                           color: Colors.grey,
