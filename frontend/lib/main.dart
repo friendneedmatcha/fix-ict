@@ -17,10 +17,10 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => Userprovider()),
-        ChangeNotifierProvider(create: (_) => ReportProvider()),
-        ChangeNotifierProvider(create: (_) => CategoryProvider()),
-        ChangeNotifierProvider(create: (_) => Feedbackprovider()),
+        ChangeNotifierProvider(create: (context) => Userprovider()),
+        ChangeNotifierProvider(create: (context) => ReportProvider()),
+        ChangeNotifierProvider(create: (context) => CategoryProvider()),
+        ChangeNotifierProvider(create: (context_) => Feedbackprovider()),
       ],
       child: const MyApp(),
     ),
