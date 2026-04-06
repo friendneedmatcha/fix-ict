@@ -1,6 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/categoryModel.dart';
+import 'package:frontend/models/reportModel.dart';
+import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/providers/categoryProvider.dart';
+import 'package:frontend/providers/reportProvider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class FormPage extends StatefulWidget {
   const FormPage({super.key});
@@ -10,10 +17,23 @@ class FormPage extends StatefulWidget {
 }
 
 class _FormPageState extends State<FormPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      Provider.of<Categoryprovider>(context, listen: false).getAll();
+    });
+  }
+
+  final TextEditingController titleCon = TextEditingController();
+  final TextEditingController locationCon = TextEditingController();
+  final TextEditingController detailCon = TextEditingController();
+
   String? _selectedPriority;
   String? _selectedCat;
 
-  final List<String> _priOp = ["ต่ำ", "กลาง", 'สูง'];
+  final List<String> _priOp = ["LOW", "MEDIUM", 'HIGH'];
   final List<String> _catOp = ["a", 'b', 'c'];
 
   File? _image;
@@ -60,31 +80,38 @@ class _FormPageState extends State<FormPage> {
   }
 
   @override
+  void dispose() {
+    titleCon.dispose();
+    locationCon.dispose();
+    detailCon.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final categoryProvider = Provider.of<Categoryprovider>(context);
+    String img =
+        "http://localhost:3000/uploads/${authProvider.userdata?.profileImage}";
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF105D38)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+        title: const Text(
+          "แจ้งซ่อม",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: const [
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        "แจ้งซ่อม",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 40),
-                ],
-              ),
-            ),
-
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -93,7 +120,6 @@ class _FormPageState extends State<FormPage> {
                   children: [
                     Container(
                       margin: const EdgeInsets.only(top: 30),
-                      // padding: const EdgeInsets.all(),
                       decoration: BoxDecoration(
                         color: const Color(0xFF4CD080),
                         borderRadius: BorderRadius.circular(100),
@@ -106,10 +132,8 @@ class _FormPageState extends State<FormPage> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 2),
-                              image: const DecorationImage(
-                                image: NetworkImage(
-                                  "https://petapixel.com/assets/uploads/2024/01/The-Star-of-System-Sol-Rectangle-640x800.jpg",
-                                ),
+                              image: DecorationImage(
+                                image: NetworkImage(img),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -117,19 +141,21 @@ class _FormPageState extends State<FormPage> {
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                "boat eiei",
-                                style: TextStyle(
+                                '${authProvider.userdata?.firstName ?? ''} ${authProvider.userdata?.lastName ?? ''}',
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Text(
-                                "12/12/2026 3:15 PM",
-                                style: TextStyle(
+                                DateFormat(
+                                  'dd/MM/yyyy HH:mm',
+                                ).format(DateTime.now()),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 14,
                                 ),
@@ -142,34 +168,48 @@ class _FormPageState extends State<FormPage> {
 
                     const SizedBox(height: 15),
 
-                    BoxInput(name: "ชื่อหัวข้อ"),
+                    BoxInput(name: "ชื่อหัวข้อ", controller: titleCon),
+
                     const SizedBox(height: 10),
 
-                    BoxInput(name: "สถานที่", hint: "ห้อง / ชั้น / อาคาร"),
+                    BoxInput(
+                      name: "สถานที่",
+                      hint: "ห้อง / ชั้น / อาคาร",
+                      controller: locationCon,
+                    ),
+
                     const SizedBox(height: 10),
 
                     BoxDropdown(
                       name: "ความสำคัญ",
                       value: _selectedPriority,
                       items: _priOp,
-                      hintText: 'dropdown',
+                      hintText: 'เลือกความสำคัญ',
                       onChanged: (val) =>
                           setState(() => _selectedPriority = val),
                     ),
 
                     const SizedBox(height: 10),
 
-                    BoxDropdown(
-                      name: "หมวดหมู่",
-                      value: _selectedCat,
-                      items: _catOp,
-                      hintText: 'dropdown',
-                      onChanged: (val) => setState(() => _selectedCat = val),
-                    ),
+                    categoryProvider.isLoading
+                        ? const CircularProgressIndicator() // 👈 loading state
+                        : BoxDropdown(
+                            name: "หมวดหมู่",
+                            value: _selectedCat,
+                            hintText: 'เลือกหมวดหมู่',
+                            categoryItems:
+                                categoryProvider.categories, // 👈 ใช้ข้อมูลจริง
+                            onChanged: (val) =>
+                                setState(() => _selectedCat = val),
+                          ),
 
                     const SizedBox(height: 10),
 
-                    BoxInput(name: "รายละเอียด", maxLines: 3),
+                    BoxInput(
+                      name: "รายละเอียด",
+                      maxLines: 3,
+                      controller: detailCon,
+                    ),
 
                     const SizedBox(height: 15),
 
@@ -215,6 +255,8 @@ class _FormPageState extends State<FormPage> {
                     ),
 
                     const SizedBox(height: 30),
+
+                    /// BUTTON
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -225,10 +267,42 @@ class _FormPageState extends State<FormPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          elevation: 0,
                         ),
-                        onPressed: () => print("55"),
-                        child: Text(
+                        onPressed: () async {
+                          final reportProvider = Provider.of<ReportProvider>(
+                            context,
+                            listen: false,
+                          );
+
+                          final report = ReportModel(
+                            title: titleCon.text,
+                            location: locationCon.text,
+                            priority: _selectedPriority,
+                            description: detailCon.text,
+                            userId: authProvider.userdata?.id.toString(),
+                            categoryId: _selectedCat,
+                          );
+
+                          final success = await reportProvider.createReport(
+                            report,
+                            imageFile: _image,
+                          );
+
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("บันทึกสำเร็จ")),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  reportProvider.error ?? "เกิดข้อผิดพลาด",
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text(
                           "บันทึก",
                           style: TextStyle(
                             fontSize: 16,
@@ -252,56 +326,14 @@ class BoxInput extends StatelessWidget {
   final String name;
   final String? hint;
   final int maxLines;
+  final TextEditingController controller;
 
-  const BoxInput({super.key, required this.name, this.hint, this.maxLines = 1});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            name,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          TextField(
-            maxLines: maxLines,
-            decoration: InputDecoration(
-              hintText: hint ?? name,
-              filled: true,
-              fillColor: Colors.white,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFF5A5A5A)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.green),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class BoxDropdown extends StatelessWidget {
-  final String name;
-  final String? value;
-  final List<String> items;
-  final String hintText;
-  final ValueChanged<String?> onChanged;
-
-  const BoxDropdown({
+  const BoxInput({
     super.key,
     required this.name,
-    this.value,
-    required this.items,
-    required this.hintText,
-    required this.onChanged,
+    this.hint,
+    this.maxLines = 1,
+    required this.controller,
   });
 
   @override
@@ -313,11 +345,76 @@ class BoxDropdown extends StatelessWidget {
           name,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
+        TextField(
+          controller: controller,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            hintText: hint ?? name,
+            filled: true,
+            fillColor: Colors.white,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF5A5A5A)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.green),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class BoxDropdown extends StatelessWidget {
+  final String name;
+  final String? value;
+  final List<String> items;
+  final String hintText;
+  final ValueChanged<String?> onChanged;
+
+  // เพิ่ม optional สำหรับ category
+  final List<Categorymodel>? categoryItems; // 👈 เพิ่ม
+
+  const BoxDropdown({
+    super.key,
+    required this.name,
+    this.value,
+    this.items = const [],
+    required this.hintText,
+    required this.onChanged,
+    this.categoryItems, // 👈 เพิ่ม
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // สร้าง items จาก categoryItems ถ้ามี
+    final dropdownItems = categoryItems != null
+        ? categoryItems!
+              .map(
+                (cat) => DropdownMenuItem(
+                  value: cat.id.toString(),
+                  child: Text(cat.name ?? ''),
+                ),
+              )
+              .toList()
+        : items
+              .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+              .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          name,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
           decoration: InputDecoration(
-            hintText: name,
+            hintText: hintText,
             filled: true,
             fillColor: Colors.white,
             enabledBorder: OutlineInputBorder(
@@ -330,9 +427,7 @@ class BoxDropdown extends StatelessWidget {
             ),
           ),
           icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFFBDBDBD)),
-          items: items
-              .map((item) => DropdownMenuItem(value: item, child: Text(item)))
-              .toList(),
+          items: dropdownItems,
         ),
       ],
     );

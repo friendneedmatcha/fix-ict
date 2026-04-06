@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/providers/categoryProvider.dart';
+import 'package:frontend/providers/reportProvider.dart';
 import 'package:frontend/providers/userProvider.dart';
 import 'package:frontend/screens/admin_screen.dart';
 import 'package:frontend/screens/auth/loginPage.dart';
@@ -15,6 +17,8 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => Userprovider()),
+        ChangeNotifierProvider(create: (_) => Categoryprovider()),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
       ],
       child: const MyApp(),
     ),
