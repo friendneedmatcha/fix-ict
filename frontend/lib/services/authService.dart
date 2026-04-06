@@ -82,6 +82,28 @@ class AuthService {
       await prefs.clear();
     }
   }
+
+  Future<String?> refreshAccessToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final refreshToken = prefs.getString('refreshToken');
+      if (refreshToken == null) return null;
+
+      final res = await dio.post(
+        "$_apiUrl/auth/refresh",
+        options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        final newToken = res.data['accessToken'];
+        await prefs.setString('accessToken', newToken);
+        return newToken;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
   // Future<Usermodel> logout() async {
   //   try {
   //     final res = await dio.post(

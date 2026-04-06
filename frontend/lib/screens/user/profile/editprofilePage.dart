@@ -44,10 +44,32 @@ class _EditprofilepageState extends State<Editprofilepage> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80, // ลดขนาดไฟล์
+
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text("ถ่ายรูป"),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text("เลือกจากแกลเลอรี่"),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
     );
+
+    if (source == null) return;
+
+    final picked = await picker.pickImage(source: source, imageQuality: 80);
+
     if (picked != null) {
       final bytes = await picked.readAsBytes();
       setState(() {

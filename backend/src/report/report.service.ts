@@ -34,6 +34,7 @@ export class ReportService {
     try {
       const report = await this.prisma.report.findMany({
         include: {
+          user: { select: { firstName: true, lastName: true } },
           updates: {
             where: { status: 'SUCCESS' },
           },
