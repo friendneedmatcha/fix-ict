@@ -5,6 +5,7 @@ import 'package:frontend/models/reportModel.dart';
 import 'package:frontend/providers/authProvider.dart';
 import 'package:frontend/providers/categoryProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
+import 'package:frontend/screens/history/historyPage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -292,6 +293,13 @@ class _FormPageState extends State<FormPage> {
                           if (success) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text("บันทึกสำเร็จ")),
+                            );
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HistoryPage(),
+                              ),
+                              (route) => false,
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(

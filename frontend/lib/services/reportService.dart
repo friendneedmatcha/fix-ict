@@ -31,6 +31,28 @@ class ReportService {
     );
   }
 
+  Future<List<ReportModel>> getByUser(int id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+
+      // Fixed: was /report/$id, should be /report/user/$id
+      final res = await dio.get(
+        "$_apiUrl/report/user/$id",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (res.statusCode == 200) {
+        return (res.data as List)
+            .map((item) => ReportModel.fromJson(item))
+            .toList();
+      }
+      throw Exception('Failed to load reports');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to load reports');
+    }
+  }
+
   Future<List<ReportModel>> getTopFive() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -61,7 +83,7 @@ class ReportService {
         "$_apiUrl/report",
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-
+      print(res.data);
       if (res.statusCode == 200) {
         return (res.data as List)
             .map((item) => ReportModel.fromJson(item))

@@ -30,7 +30,6 @@ class Usermodel {
       profileImage: json['profileImage'],
     );
   }
-
   // Map<String, dynamic> toJson() {
   //   return {
   //     'id': id ,

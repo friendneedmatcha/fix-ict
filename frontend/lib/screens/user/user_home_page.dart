@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/authProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
-import 'package:frontend/screens/history/historryPaage.dart';
+import 'package:frontend/screens/history/historyPage.dart';
 import 'package:frontend/screens/report/formPage.dart';
 import 'package:frontend/screens/search/searchPage.dart';
 import 'package:intl/intl.dart';

@@ -18,9 +18,13 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = context.read<ReportProvider>();
       await provider.fetchAll();
+
+      if (!mounted) return;
+
       setState(() {
         _filteredItems = List<ReportModel>.from(provider.reports);
       });
@@ -35,6 +39,9 @@ class _SearchPageState extends State<SearchPage> {
 
   void _search(List<ReportModel> allReports) {
     final query = _searchController.text.toLowerCase();
+
+    if (!mounted) return;
+
     setState(() {
       _filteredItems = allReports.where((item) {
         final title = item.title?.toLowerCase() ?? '';
@@ -88,7 +95,7 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                       child: TextField(
                         controller: _searchController,
-                        onChanged: (value) => _search(allReports),
+                        onChanged: (_) => _search(allReports),
                         decoration: const InputDecoration(
                           hintText: 'ค้นหาชื่อรายงาน...',
                           hintStyle: TextStyle(
@@ -111,7 +118,7 @@ class _SearchPageState extends State<SearchPage> {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2E7D32),
+                        color: Color(0xFF2E7D32),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -124,9 +131,7 @@ class _SearchPageState extends State<SearchPage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
             Expanded(
               child: provider.isLoading
                   ? const Center(
@@ -174,6 +179,7 @@ class _ReportCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final fullName = '${item.userFirstName ?? ''} ${item.userLastName ?? ''}'
         .trim();
+
     final dateStr = item.createdAt != null
         ? '${item.createdAt!.day}/${item.createdAt!.month}/${item.createdAt!.year}'
         : '-';
@@ -233,7 +239,7 @@ class _ReportCard extends StatelessWidget {
                 ),
               );
             },
-            child: Text(
+            child: const Text(
               'ดูรายละเอียด',
               style: TextStyle(
                 fontSize: 13,

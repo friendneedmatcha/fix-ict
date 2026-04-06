@@ -6,15 +6,16 @@ import 'package:frontend/services/reportService.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ReportProvider extends ChangeNotifier {
+  List<ReportModel> _reports = [];
   List<ReportModel> _topFive = [];
   bool _loading = false;
   String? _error;
 
   ReportModel? _selectedReport;
-
   ReportModel? get selectedReport => _selectedReport;
-
   List<ReportModel> get topFive => _topFive;
+  List<ReportModel> get reports => _reports;
+
   bool get isLoading => _loading;
   String? get error => _error;
 
@@ -35,9 +36,6 @@ class ReportProvider extends ChangeNotifier {
     }
   }
 
-  List<ReportModel> _reports = [];
-  List<ReportModel> get reports => _reports;
-
   Future<void> fetchAll() async {
     _loading = true;
     _error = null;
@@ -45,6 +43,21 @@ class ReportProvider extends ChangeNotifier {
 
     try {
       _reports = await _reportService.getAll();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> getByUser(int id) async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _reports = await _reportService.getByUser(id);
     } catch (e) {
       _error = e.toString();
     } finally {

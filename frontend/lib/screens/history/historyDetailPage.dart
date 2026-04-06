@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/models/feedbackModel.dart';
+import 'package:frontend/providers/feedbackProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -38,6 +40,7 @@ class _HistorydetailpageState extends State<Historydetailpage> {
   Widget build(BuildContext context) {
     final provider = Provider.of<ReportProvider>(context);
     final report = provider.selectedReport;
+    bool hasFeedback = report?.feedback != null;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: _buildAppBar(),
@@ -80,70 +83,118 @@ class _HistorydetailpageState extends State<Historydetailpage> {
                       ),
                     ),
                   ),
+                  if (report?.status == 'SUCCESS' && !hasFeedback) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 20,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(5, (index) {
+                          return GestureDetector(
+                            onTap: () =>
+                                setState(() => _selectedRating = index + 1),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
+                              // decoration: BoxDecoration()
+                              child: Icon(
+                                index < _selectedRating
+                                    ? Icons.star
+                                    : Icons.star,
+                                color: index < _selectedRating
+                                    ? Colors.amber
+                                    : Colors.grey.shade300,
+                                size: 50,
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
 
-                  // // Stars
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(
-                  //     vertical: 16,
-                  //     horizontal: 20,
-                  //   ),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: List.generate(5, (index) {
-                  //       return GestureDetector(
-                  //         onTap: () =>
-                  //             setState(() => _selectedRating = index + 1),
-                  //         child: Padding(
-                  //           padding: const EdgeInsets.symmetric(horizontal: 4),
-                  //           // decoration: BoxDecoration()
-                  //           child: Icon(
-                  //             index < _selectedRating ? Icons.star : Icons.star,
-                  //             color: index < _selectedRating
-                  //                 ? Colors.amber
-                  //                 : Colors.grey.shade300,
-                  //             size: 50,
-                  //           ),
-                  //         ),
-                  //       );
-                  //     }),
-                  //   ),
-                  // ),
+                    // Comment input
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
+                      child: TextField(
+                        controller: _commentController,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          // fillColor: Colors.white,
+                          hintText: 'แสดงความคิดเห็นเพิ่มเติม',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontSize: 14,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF105D38),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF105D38),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            // borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        // onPressed: userProvider.isLoading ? null : _handleSave,
+                        onPressed: () async {
+                          final feedbackProvider =
+                              Provider.of<Feedbackprovider>(
+                                context,
+                                listen: false,
+                              );
 
-                  // // Comment input
-                  // Padding(
-                  //   padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
-                  //   child: TextField(
-                  //     controller: _commentController,
-                  //     decoration: InputDecoration(
-                  //       filled: true,
-                  //       fillColor: Colors.white,
-                  //       // fillColor: Colors.white,
-                  //       hintText: 'แสดงความคิดเห็นเพิ่มเติม',
-                  //       hintStyle: TextStyle(
-                  //         color: Colors.grey.shade400,
-                  //         fontSize: 14,
-                  //       ),
-                  //       contentPadding: const EdgeInsets.symmetric(
-                  //         horizontal: 16,
-                  //         vertical: 12,
-                  //       ),
-                  //       border: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(8),
-                  //         borderSide: BorderSide(color: Colors.grey.shade300),
-                  //       ),
-                  //       enabledBorder: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(8),
-                  //         borderSide: BorderSide(color: Colors.grey.shade300),
-                  //       ),
-                  //       focusedBorder: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(8),
-                  //         borderSide: const BorderSide(
-                  //           color: Color(0xFF105D38),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
+                          final data = Feedbackmodel(
+                            reportId: widget.reportId,
+                            rating: _selectedRating,
+                            comment: _commentController.text,
+                          );
+
+                          final success = await feedbackProvider.create(data);
+
+                          if (success && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('บันทึกสำเร็จ')),
+                            );
+                            Navigator.maybePop(context);
+                          }
+                        },
+                        child: Text(
+                          "บันทึก",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -278,7 +329,6 @@ class _HistorydetailpageState extends State<Historydetailpage> {
                         ),
                       ),
 
-                      /// 🔹 AFTER IMAGE (แสดงเฉพาะ SUCCESS)
                       if (report?.status == "SUCCESS") ...[
                         const SizedBox(width: 10),
                         Expanded(
@@ -311,8 +361,8 @@ class _HistorydetailpageState extends State<Historydetailpage> {
                     children: [
                       _buildInfoColumn(
                         label: 'status',
-                        value: 'success',
-                        valueColor: Color(0xFF105D38),
+                        value: '${report?.status}',
+                        valueColor: getStatusColor(report?.status),
                         fontWeight: FontWeight.w600,
                       ),
                       _buildInfoColumn(
@@ -400,4 +450,17 @@ Widget _buildErrorImage() {
     color: Colors.grey.shade300,
     child: Icon(Icons.image, size: 40, color: Colors.grey.shade500),
   );
+}
+
+Color getStatusColor(String? status) {
+  switch (status?.toLowerCase()) {
+    case 'pending':
+      return Colors.orange;
+    case 'in_progress':
+      return Colors.blue;
+    case 'success':
+      return Colors.green;
+    default:
+      return Colors.grey;
+  }
 }

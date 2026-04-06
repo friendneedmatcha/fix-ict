@@ -7,13 +7,16 @@ export class FeedbackService {
   constructor(private prisma: PrismaService) {}
 
   async create(reportId: number, data: FeedbackDto, userId: number) {
-    return this.prisma.feedback.create({
-      data: {
-        reportId: reportId,
-        userId: userId,
-        rating: data.rating,
-        comment: data.comment,
-      },
-    });
+    return {
+      message: 'success',
+      data: await this.prisma.feedback.create({
+        data: {
+          reportId: reportId,
+          userId: userId,
+          rating: data.rating,
+          comment: data.comment,
+        },
+      }),
+    };
   }
 }
