@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+    <string>ต้องการใช้กล้องเพื่ออัพโหลดรูปภาพ</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>ต้องการเข้าถึงแกลเลอรี่เพื่ออัพโหลดรูปภาพ</string>
 </dict>
 </plist>
