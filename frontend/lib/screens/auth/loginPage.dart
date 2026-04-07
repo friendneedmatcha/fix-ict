@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/providers/authProvider.dart';
-import 'package:frontend/screens/user/userHomePage.dart';
 import 'package:frontend/screens/auth/registerPage.dart';
 import 'package:frontend/screens/userScreen.dart';
-import 'package:frontend/services/authService.dart';
 import 'package:provider/provider.dart';
 
 class Loginpage extends StatefulWidget {
@@ -20,149 +18,163 @@ class _LoginpageState extends State<Loginpage> {
   final TextEditingController _passwordController = TextEditingController();
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30),
-                child: Row(
-                  mainAxisAlignment: .center,
-                  children: [
-                    ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [Color(0xFF22C375), Color(0xFF105D38)],
-                        begin: Alignment.center,
-                        end: Alignment.topRight,
-                      ).createShader(bounds),
-                      child: const Text(
-                        'Fix',
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Color(0xFF22C375), Color(0xFF105D38)],
+                          begin: Alignment.center,
+                          end: Alignment.topRight,
+                        ).createShader(bounds),
+                        child: const Text(
+                          'Fix',
+                          style: TextStyle(
+                            fontSize: 58,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "IBM",
+                            letterSpacing: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const Text(
+                        "ICT",
                         style: TextStyle(
                           fontSize: 58,
                           fontWeight: FontWeight.bold,
                           fontFamily: "IBM",
                           letterSpacing: 2,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
-                    ),
-                    Text(
-                      "ICT",
-                      style: TextStyle(
-                        fontSize: 58,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: "IBM",
-                        letterSpacing: 2,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 40),
 
-              const Text(
-                "LOGIN",
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF105D38),
+                const SizedBox(height: 30),
+
+                const Text(
+                  "LOGIN",
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF105D38),
+                  ),
                 ),
-              ),
 
-              _FormInput(
-                label: "Email",
-                icon: Icons.account_circle_outlined,
-                controller: _emailController,
-              ),
-              _FormInput(
-                label: "Password",
-                icon: Icons.key,
-                isPassword: true,
-                controller: _passwordController,
-              ),
+                const SizedBox(height: 20),
 
-              const SizedBox(height: 20),
+                _FormInput(
+                  label: "Email",
+                  icon: Icons.account_circle_outlined,
+                  controller: _emailController,
+                ),
+                _FormInput(
+                  label: "Password",
+                  icon: Icons.key,
+                  isPassword: true,
+                  controller: _passwordController,
+                ),
 
-              SizedBox(
-                width: 189,
-                height: 44,
-                child: ElevatedButton(
-                  onPressed: authProvider.isLoading
-                      ? null
-                      : () async {
-                          print(_emailController.text);
-                          print(_passwordController.text);
+                const SizedBox(height: 20),
 
-                          await authProvider.login(
-                            Usermodel(
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                            ),
-                          );
-
-                          if (authProvider.isAuthenticate) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('เข้าสู่ระบบสำเร็จ'),
-                                backgroundColor: Colors.green,
+                SizedBox(
+                  width: 189,
+                  height: 44,
+                  child: ElevatedButton(
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : () async {
+                            await authProvider.login(
+                              Usermodel(
+                                email: _emailController.text,
+                                password: _passwordController.text,
                               ),
                             );
-                            if (context.mounted) {
+
+                            if (!mounted) return;
+
+                            if (authProvider.isAuthenticate) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('เข้าสู่ระบบสำเร็จ'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const MainScreen(),
+                                  builder: (_) => const MainScreen(),
                                 ),
                                 (route) => false,
                               );
-                            }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  authProvider.error ?? 'Login failed',
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    authProvider.error ?? 'Login failed',
+                                  ),
+                                  backgroundColor: Colors.red,
                                 ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF105D38),
-                    foregroundColor: Colors.white,
-                  ),
-                  child: authProvider.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("LOGIN"),
-                ),
-              ),
-              SizedBox(height: 30),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          Registerpage(authProvider: authProvider),
+                              );
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF105D38),
+                      foregroundColor: Colors.white,
                     ),
-                  );
-                },
-                child: Text(
-                  "Have account? Sign in",
-                  style: TextStyle(
-                    color: Color.fromARGB(106, 0, 0, 0),
-                    decoration: TextDecoration.underline,
+                    child: authProvider.isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text("LOGIN"),
                   ),
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 30),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            Registerpage(authProvider: authProvider),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    "Have account? Sign in",
+                    style: TextStyle(
+                      color: Color.fromARGB(106, 0, 0, 0),
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -175,6 +187,7 @@ class _FormInput extends StatelessWidget {
   final IconData icon;
   final bool isPassword;
   final TextEditingController controller;
+
   const _FormInput({
     super.key,
     required this.label,
@@ -192,19 +205,19 @@ class _FormInput extends StatelessWidget {
         obscureText: isPassword,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            borderSide: BorderSide(color: Color(0xFF4CD080), width: 3),
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(color: Color(0xFF4CD080), width: 3),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            borderSide: BorderSide(color: Color(0xFF4CD080), width: 3),
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(color: Color(0xFF4CD080), width: 3),
           ),
           prefixIcon: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Icon(icon, size: 30, color: Color.fromARGB(106, 0, 0, 0)),
           ),
           labelText: label,
-          labelStyle: TextStyle(color: Color.fromARGB(106, 0, 0, 0)),
+          labelStyle: const TextStyle(color: Color.fromARGB(106, 0, 0, 0)),
         ),
       ),
     );

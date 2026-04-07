@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/providers/authProvider.dart';
-import 'package:frontend/screens/user/userHomePage.dart';
 
 class Registerpage extends StatefulWidget {
   final AuthProvider authProvider;
@@ -19,6 +18,7 @@ class _RegisterpageState extends State<Registerpage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+
   @override
   void dispose() {
     _firstNameController.dispose();
@@ -33,6 +33,7 @@ class _RegisterpageState extends State<Registerpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -42,13 +43,14 @@ class _RegisterpageState extends State<Registerpage> {
         ),
       ),
       body: SafeArea(
-        child: Center(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 55),
+            padding: const EdgeInsets.symmetric(horizontal: 55, vertical: 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "REGISTER",
                   style: TextStyle(
                     fontSize: 36,
@@ -57,7 +59,9 @@ class _RegisterpageState extends State<Registerpage> {
                     color: Color(0xFF105D38),
                   ),
                 ),
-                SizedBox(height: 50),
+
+                const SizedBox(height: 40),
+
                 Row(
                   children: [
                     Expanded(
@@ -74,6 +78,7 @@ class _RegisterpageState extends State<Registerpage> {
                     ),
                   ],
                 ),
+
                 _FormInput(
                   label: "Email",
                   icon: Icons.account_circle_outlined,
@@ -94,11 +99,11 @@ class _RegisterpageState extends State<Registerpage> {
                 _FormInput(
                   label: "Phone",
                   icon: Icons.phone,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.phone,
                   controller: _phoneController,
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 SizedBox(
                   width: 189,
@@ -119,6 +124,8 @@ class _RegisterpageState extends State<Registerpage> {
                               user,
                             );
 
+                            if (!mounted) return;
+
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -126,32 +133,34 @@ class _RegisterpageState extends State<Registerpage> {
                                   backgroundColor: Colors.green,
                                 ),
                               );
-
                               Navigator.pop(context);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    widget.authProvider.error!.replaceAll(
-                                      'Exception: ',
-                                      '',
-                                    ),
+                                    widget.authProvider.error?.replaceAll(
+                                          'Exception: ',
+                                          '',
+                                        ) ??
+                                        'Register failed',
                                   ),
                                   backgroundColor: Colors.red,
                                 ),
                               );
                             }
                           },
-
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF105D38),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(100)),
-                        side: BorderSide(color: Color(0xFF4CD080), width: 3),
+                        borderRadius: BorderRadius.circular(100),
+                        side: const BorderSide(
+                          color: Color(0xFF4CD080),
+                          width: 3,
+                        ),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       "REGISTER",
                       style: TextStyle(
                         fontFamily: "IBM",
@@ -162,6 +171,8 @@ class _RegisterpageState extends State<Registerpage> {
                     ),
                   ),
                 ),
+
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -177,6 +188,7 @@ class _FormInput extends StatelessWidget {
   final bool isPassword;
   final TextInputType keyboardType;
   final TextEditingController controller;
+
   const _FormInput({
     super.key,
     required this.label,
@@ -196,12 +208,12 @@ class _FormInput extends StatelessWidget {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            borderSide: BorderSide(color: Color(0xFF4CD080), width: 3),
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(color: Color(0xFF4CD080), width: 3),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            borderSide: BorderSide(color: Color(0xFF4CD080), width: 3),
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(color: Color(0xFF4CD080), width: 3),
           ),
           prefixIcon: icon != null
               ? Padding(
@@ -209,12 +221,12 @@ class _FormInput extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: 30,
-                    color: Color.fromARGB(106, 0, 0, 0),
+                    color: const Color.fromARGB(106, 0, 0, 0),
                   ),
                 )
               : null,
           labelText: label,
-          labelStyle: TextStyle(color: Color.fromARGB(106, 0, 0, 0)),
+          labelStyle: const TextStyle(color: Color.fromARGB(106, 0, 0, 0)),
         ),
       ),
     );
