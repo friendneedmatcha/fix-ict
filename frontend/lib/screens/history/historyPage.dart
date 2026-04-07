@@ -3,6 +3,7 @@ import 'package:frontend/main.dart';
 import 'package:frontend/models/reportModel.dart';
 import 'package:frontend/providers/authProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
+import 'package:frontend/screens/history/historyDetailPage.dart';
 import 'package:frontend/screens/user/userHomePage.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -140,7 +141,6 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                   child: Column(
                     children: [
-                      // ── Summary bar ──────────────────────────────────────
                       Container(
                         decoration: BoxDecoration(
                           color: const Color(0xFF105D38),
@@ -180,7 +180,6 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                       const SizedBox(height: 14),
 
-                      // ── Category filter ──────────────────────────────────
                       Row(
                         children: [
                           const Text(
@@ -240,7 +239,6 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                       const SizedBox(height: 14),
 
-                      // ── Report list ──────────────────────────────────────
                       if (reportProvider.isLoading)
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 40),
@@ -377,7 +375,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       Container(
                         width: 46,
                         child: Text(
-                          "$dateStr  \nกำลังซ่อม  ",
+                          "$dateStr  \n${report.status}  ",
                           style: TextStyle(
                             color: Color(0xFF606060),
                             fontSize: 10,
@@ -402,11 +400,22 @@ class _HistoryPageState extends State<HistoryPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "CLICK",
-                        style: TextStyle(
-                          color: Color(0xFF105D38),
-                          fontSize: 14,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  Historydetailpage(reportId: report.id!),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "CLICK",
+                          style: TextStyle(
+                            color: Color(0xFF105D38),
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ],
