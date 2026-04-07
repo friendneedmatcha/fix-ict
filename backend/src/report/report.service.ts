@@ -13,7 +13,7 @@ export class ReportService {
   async create(data: CreateReportDto, file: Express.Multer.File) {
     console.log(file);
     try {
-      return await this.prisma.report.create({
+      const result = await this.prisma.report.create({
         data: {
           title: data.title,
           description: data.description,
@@ -24,6 +24,10 @@ export class ReportService {
           categoryId: +data.categoryId,
         },
       });
+      return {
+        messsage: 'success',
+        data: result,
+      };
     } catch (err) {
       console.log(err);
       throw new InternalServerErrorException('Server Error');
@@ -34,9 +38,11 @@ export class ReportService {
     try {
       const report = await this.prisma.report.findMany({
         include: {
+          user: { select: { firstName: true, lastName: true } },
           updates: {
             where: { status: 'SUCCESS' },
           },
+          feedback: true,
         },
       });
       return report;
@@ -71,6 +77,7 @@ export class ReportService {
           updates: {
             where: { status: 'SUCCESS' },
           },
+          feedback: true,
         },
       });
       if (!reportid) {

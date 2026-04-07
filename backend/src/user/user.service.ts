@@ -50,29 +50,38 @@ export class UserService {
     }
   }
 
-  async update(id: string, data: UserDto) {
-    const checkMail = await this.findbyemail(data.email);
-    if (checkMail) throw new ConflictException('dup mail');
-    const updateData = { ...data };
-
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, 10);
+  async update(id: string, data: UserDto, file: Express.Multer.File) {
+    if (data.email) {
+      const checkMail = await this.prisma.user.findFirst({
+        where: {
+          email: data.email,
+          NOT: { id: +id },
+        },
+      });
+      if (checkMail) throw new ConflictException('dup mail');
     }
 
     try {
+      const updateData: any = {};
+      if (data.firstName) updateData.firstName = data.firstName;
+      if (data.lastName) updateData.lastName = data.lastName;
+      if (data.email) updateData.email = data.email;
+      if (data.tel) updateData.tel = data.tel;
+      if (data.password)
+        updateData.password = await bcrypt.hash(data.password, 10);
+      if (data.role) updateData.role = data.role;
+      if (file) updateData.profileImage = file.filename;
+
       const update = await this.prisma.user.update({
         where: { id: +id },
         data: updateData,
       });
 
-      return {
-        message: 'Update Success',
-        update,
-      };
+      const { password, ...result } = update;
+      return { message: 'Update Success', data: result };
     } catch (err) {
-      if (err instanceof NotFoundException) {
-        throw err;
-      }
+      if (err instanceof ConflictException) throw err;
+      if (err instanceof NotFoundException) throw err;
       console.log(err);
       throw new InternalServerErrorException('Server Error');
     }

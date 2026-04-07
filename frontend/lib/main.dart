@@ -1,33 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/aboutusPage.dart';
-import 'package:frontend/screens/editprofilePage.dart';
-import 'package:frontend/screens/adminpage.dart';
-import 'package:frontend/screens/homePage.dart';
-import 'package:frontend/screens/loginPage.dart';
-import 'package:frontend/screens/manageuserPage.dart';
-import 'package:frontend/screens/profilePage.dart';
-import 'package:frontend/screens/registerPage.dart';
-import 'package:frontend/screens/formPage.dart';
-import 'package:frontend/screens/reportlistPage.dart';
-import 'package:frontend/screens/updatereportPage.dart';
+import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/providers/categoryProvider.dart';
+import 'package:frontend/providers/feedbackProvider.dart';
+import 'package:frontend/providers/reportProvider.dart';
+import 'package:frontend/providers/userProvider.dart';
+import 'package:frontend/screens/adminScreen.dart';
+import 'package:frontend/screens/auth/loginPage.dart';
+import 'package:frontend/screens/userScreen.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main(List<String> args) {
-  runApp(MyWidget());
+Future<void> main() async {
+  await dotenv.load();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => Userprovider()),
+        ChangeNotifierProvider(create: (context) => ReportProvider()),
+        ChangeNotifierProvider(create: (context) => CategoryProvider()),
+        ChangeNotifierProvider(create: (context_) => Feedbackprovider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "fixICT",
+      title: 'fixICT',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'IBM',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
+        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
       ),
-      home: Manageuserpage(),
+      home: const MainScreen(),
     );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    if (!authProvider.isAuthenticate) {
+      return Loginpage();
+    }
+
+    if (authProvider.userdata?.role == "ADMIN") {
+      return const AdminMainScreen();
+    }
+
+    return const UserMainScreen();
   }
 }
