@@ -58,8 +58,11 @@ class _UserHomePageState extends State<UserHomePage> {
                       width: double.infinity,
                       height: 180,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4CAF79),
                         borderRadius: BorderRadius.circular(20),
+                        image: const DecorationImage(
+                          image: AssetImage("assets/banner.png"),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),

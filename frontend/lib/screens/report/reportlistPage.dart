@@ -62,10 +62,6 @@ class _ReportlistpageState extends State<Reportlistpage> {
         )
         .toList();
 
-    final categoryItems = [
-      "ทั้งหมด",
-      ...categoryProvider.categories.map((c) => c.id.toString()),
-    ];
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -177,7 +173,6 @@ class _dataShow extends StatelessWidget {
   final String status;
   final Color statusColor;
   final ReportModel report;
-  final VoidCallback? onTap;
 
   const _dataShow({
     super.key,
@@ -186,7 +181,6 @@ class _dataShow extends StatelessWidget {
     required this.status,
     required this.statusColor,
     required this.report,
-    this.onTap,
   });
 
   @override
@@ -210,86 +204,87 @@ class _dataShow extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  Container(
-                    width: 230,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              fontFamily: "IBM",
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-
-                          Text(
-                            date,
-                            style: TextStyle(
-                              fontFamily: "IBM",
-                              fontSize: 11,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "สถานะ : ",
-                                style: TextStyle(
-                                  fontFamily: "IBM",
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                  Expanded(
+                    child: Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: TextStyle(
+                                fontFamily: "IBM",
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
                               ),
-                              Text(
-                                status,
-                                style: TextStyle(
-                                  fontFamily: "IBM",
-                                  fontSize: 14,
-                                  color: statusColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(
+                              date,
+                              style: TextStyle(
+                                fontFamily: "IBM",
+                                fontSize: 11,
+                                fontWeight: FontWeight.w400,
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "สถานะ : ",
+                                  style: TextStyle(
+                                    fontFamily: "IBM",
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  status,
+                                  style: TextStyle(
+                                    fontFamily: "IBM",
+                                    fontSize: 14,
+                                    color: statusColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  Spacer(),
-                  OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              Updatereportpage(report: report),
+                  SizedBox(width: 10),
+                  SizedBox(
+                    width: 90,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                Updatereportpage(report: report),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        textStyle: TextStyle(
+                          fontFamily: "IBM",
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
                         ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      textStyle: TextStyle(
-                        fontFamily: "IBM",
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
+                        foregroundColor: Colors.white,
+                        side: BorderSide(color: Colors.white, width: 2),
                       ),
-                      foregroundColor: Colors.white,
-                      side: BorderSide(color: Colors.white, width: 2),
+                      child: Text("รายละเอียด"),
                     ),
-                    child: Text("รายละเอียด"),
                   ),
                 ],
               ),

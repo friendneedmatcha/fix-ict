@@ -9,6 +9,7 @@ import 'package:frontend/providers/reportProvider.dart';
 import 'package:frontend/screens/history/historyPage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 class FormPage extends StatefulWidget {
@@ -122,7 +123,7 @@ class _FormPageState extends State<FormPage> {
                       backgroundImage:
                           authProvider.userdata?.profileImage != null
                           ? NetworkImage(
-                              "http://localhost:3000/uploads/${authProvider.userdata!.profileImage}",
+                              "${dotenv.env['API_URL']}/uploads/${authProvider.userdata!.profileImage}",
                             )
                           : null,
                       child: authProvider.userdata?.profileImage == null
