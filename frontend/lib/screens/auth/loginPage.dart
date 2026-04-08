@@ -120,9 +120,13 @@ class _LoginpageState extends State<Loginpage> {
 
                             if (authProvider.isAuthenticate) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   content: Text('เข้าสู่ระบบสำเร็จ'),
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: Color(0xFF105D38),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                               );
 
@@ -140,6 +144,10 @@ class _LoginpageState extends State<Loginpage> {
                                     authProvider.error ?? 'Login failed',
                                   ),
                                   backgroundColor: Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                               );
                             }

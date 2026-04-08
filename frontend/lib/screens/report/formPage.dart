@@ -88,6 +88,7 @@ class _FormPageState extends State<FormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final rpP = Provider.of<ReportProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
     final categoryProvider = Provider.of<CategoryProvider>(context);
 
@@ -103,198 +104,255 @@ class _FormPageState extends State<FormPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      body: Consumer<ReportProvider>(
+        builder: (context, reportProvider, child) {
+          return Stack(
             children: [
-              Container(
-                margin: const EdgeInsets.only(top: 30),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4CD080),
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 32,
-                      backgroundImage:
-                          authProvider.userdata?.profileImage != null
-                          ? NetworkImage(
-                              "${dotenv.env['API_URL']}/uploads/${authProvider.userdata!.profileImage}",
-                            )
-                          : null,
-                      child: authProvider.userdata?.profileImage == null
-                          ? const Icon(Icons.person, color: Colors.white)
-                          : null,
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${authProvider.userdata?.firstName ?? ''} ${authProvider.userdata?.lastName ?? ''}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+              SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 30),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF4CD080),
+                          borderRadius: BorderRadius.circular(100),
                         ),
-                        Text(
-                          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              BoxInput(name: "ชื่อหัวข้อ", controller: titleCon),
-              const SizedBox(height: 10),
-
-              BoxInput(
-                name: "สถานที่",
-                hint: "ห้อง / ชั้น / อาคาร",
-                controller: locationCon,
-              ),
-              const SizedBox(height: 10),
-
-              BoxDropdown(
-                name: "ความสำคัญ",
-                value: _selectedPriority,
-                items: _priOp,
-                hintText: "เลือกความสำคัญ",
-                onChanged: (val) => setState(() => _selectedPriority = val),
-              ),
-              const SizedBox(height: 10),
-
-              categoryProvider.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : BoxDropdown(
-                      name: "หมวดหมู่",
-                      value: _selectedCat,
-                      hintText: "เลือกหมวดหมู่",
-                      categoryItems: categoryProvider.categories,
-                      onChanged: (val) => setState(() => _selectedCat = val),
-                    ),
-
-              const SizedBox(height: 10),
-
-              BoxInput(name: "รายละเอียด", maxLines: 3, controller: detailCon),
-
-              const SizedBox(height: 15),
-
-              const Text(
-                "แนบรูปภาพ",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-
-              InkWell(
-                onTap: _pickImage,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: double.infinity,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF5A5A5A)),
-                  ),
-                  child: _selectedImageBytes != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.memory(
-                            _selectedImageBytes!,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(
-                              Icons.cloud_upload,
-                              size: 40,
-                              color: Colors.grey,
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 32,
+                              backgroundImage:
+                                  authProvider.userdata?.profileImage != null
+                                  ? NetworkImage(
+                                      "${dotenv.env['API_URL']}/uploads/${authProvider.userdata!.profileImage}",
+                                    )
+                                  : null,
+                              child: authProvider.userdata?.profileImage == null
+                                  ? const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    )
+                                  : null,
                             ),
-                            SizedBox(height: 8),
-                            Text("กดเพื่ออัปโหลด / ถ่ายรูป"),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${authProvider.userdata?.firstName ?? ''} ${authProvider.userdata?.lastName ?? ''}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat(
+                                    'dd/MM/yyyy HH:mm',
+                                  ).format(DateTime.now()),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                ),
-              ),
+                      ),
 
-              const SizedBox(height: 30),
+                      const SizedBox(height: 15),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1B5E20),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () async {
-                    final reportProvider = Provider.of<ReportProvider>(
-                      context,
-                      listen: false,
-                    );
+                      BoxInput(name: "ชื่อหัวข้อ", controller: titleCon),
+                      const SizedBox(height: 10),
 
-                    final report = ReportModel(
-                      title: titleCon.text,
-                      location: locationCon.text,
-                      priority: _selectedPriority,
-                      description: detailCon.text,
-                      userId: authProvider.userdata?.id,
-                      categoryId: _selectedCat != null
-                          ? int.parse(_selectedCat!)
-                          : null,
-                    );
+                      BoxInput(
+                        name: "สถานที่",
+                        hint: "ห้อง / ชั้น / อาคาร",
+                        controller: locationCon,
+                      ),
+                      const SizedBox(height: 10),
 
-                    final success = await reportProvider.createReport(
-                      report,
-                      imageFile: _selectedImage,
-                    );
+                      BoxDropdown(
+                        name: "ความสำคัญ",
+                        value: _selectedPriority,
+                        items: _priOp,
+                        hintText: "เลือกความสำคัญ",
+                        onChanged: (val) =>
+                            setState(() => _selectedPriority = val),
+                      ),
+                      const SizedBox(height: 10),
 
-                    if (!mounted) return;
+                      categoryProvider.isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : BoxDropdown(
+                              name: "หมวดหมู่",
+                              value: _selectedCat,
+                              hintText: "เลือกหมวดหมู่",
+                              categoryItems: categoryProvider.categories,
+                              onChanged: (val) =>
+                                  setState(() => _selectedCat = val),
+                            ),
 
-                    if (success) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("บันทึกสำเร็จ")),
-                      );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const HistoryPage()),
-                        // (route) => false,
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            reportProvider.error ?? "เกิดข้อผิดพลาด",
+                      const SizedBox(height: 10),
+
+                      BoxInput(
+                        name: "รายละเอียด",
+                        maxLines: 3,
+                        controller: detailCon,
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      const Text(
+                        "แนบรูปภาพ",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      InkWell(
+                        onTap: _pickImage,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          width: double.infinity,
+                          height: 180,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFF5A5A5A)),
+                          ),
+                          child: _selectedImageBytes != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.memory(
+                                    _selectedImageBytes!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(
+                                      Icons.cloud_upload,
+                                      size: 40,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text("กดเพื่ออัปโหลด / ถ่ายรูป"),
+                                  ],
+                                ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1B5E20),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: rpP.isLoading
+                              ? null
+                              : () async {
+                                  final reportProvider =
+                                      Provider.of<ReportProvider>(
+                                        context,
+                                        listen: false,
+                                      );
+
+                                  final report = ReportModel(
+                                    title: titleCon.text,
+                                    location: locationCon.text,
+                                    priority: _selectedPriority,
+                                    description: detailCon.text,
+                                    userId: authProvider.userdata?.id,
+                                    categoryId: _selectedCat != null
+                                        ? int.parse(_selectedCat!)
+                                        : null,
+                                  );
+
+                                  final success = await reportProvider
+                                      .createReport(
+                                        report,
+                                        imageFile: _selectedImage,
+                                      );
+
+                                  if (!mounted) return;
+
+                                  if (success) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('บันทึกสำเร็จ'),
+                                        backgroundColor: Color(0xFF105D38),
+                                        behavior: SnackBarBehavior.floating,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const HistoryPage(),
+                                      ),
+                                      // (route) => false,
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          reportProvider.error ??
+                                              'เกิดข้อผิดพลาด',
+                                        ),
+                                        backgroundColor: Color(0xFF105D38),
+                                        behavior: SnackBarBehavior.floating,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                          child: const Text(
+                            "บันทึก",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    "บันทึก",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+
+                      const SizedBox(height: 30),
+                    ],
                   ),
                 ),
               ),
-
-              const SizedBox(height: 30),
+              if (reportProvider.isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.4),
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF105D38)),
+                  ),
+                ),
             ],
-          ),
-        ),
+          );
+        },
       ),
+      // body:
     );
   }
 }

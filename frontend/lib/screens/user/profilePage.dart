@@ -119,16 +119,39 @@ class _ProfilepageState extends State<Profilepage> {
                         color: Color(0xFFDF0000),
                         icon: Icons.logout,
                         onTap: () async {
-                          await authProvider.logout();
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: Text("ยืนยันการออกจากระบบ"),
+                              content: Text("คุณต้องการออกจากระบบใช่หรือไม่"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: Text("ยกเลิก"),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: Text(
+                                    "ยืนยัน",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
 
-                          if (context.mounted) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Loginpage(),
-                              ),
-                              (route) => false,
-                            );
+                          if (confirm == true) {
+                            await authProvider.logout();
+
+                            if (context.mounted) {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Loginpage(),
+                                ),
+                                (route) => false,
+                              );
+                            }
                           }
                         },
                       ),
