@@ -128,9 +128,13 @@ class _RegisterpageState extends State<Registerpage> {
 
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('สมัครสมาชิกสำเร็จ!'),
-                                  backgroundColor: Colors.green,
+                                SnackBar(
+                                  content: Text('สมัครสมาชิกสำเร็จ'),
+                                  backgroundColor: Color(0xFF105D38),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                               );
                               Navigator.pop(context);
@@ -145,6 +149,10 @@ class _RegisterpageState extends State<Registerpage> {
                                         'Register failed',
                                   ),
                                   backgroundColor: Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                               );
                             }

@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/feedbackModel.dart';
 import 'package:frontend/providers/feedbackProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Historydetailpage extends StatefulWidget {
@@ -367,12 +368,20 @@ class _HistorydetailpageState extends State<Historydetailpage> {
                       ),
                       _buildInfoColumn(
                         label: 'Date',
-                        value: '12 May, 2026',
+                        value: report?.createdAt != null
+                            ? DateFormat(
+                                'dd/MM/yy',
+                              ).format(report!.createdAt!.toLocal())
+                            : '-',
                         valueColor: Colors.black87,
                       ),
                       _buildInfoColumn(
                         label: 'Time',
-                        value: '3:30 PM',
+                        value: report?.createdAt != null
+                            ? DateFormat(
+                                'HH:mm',
+                              ).format(report!.createdAt!.toLocal())
+                            : '-',
                         valueColor: Colors.black87,
                       ),
                     ],
