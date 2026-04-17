@@ -16,7 +16,7 @@ jobs:
       - name: connect ts
         uses: tailscale/github-action@v2
         with:
-          authkey: ${{ secret.TS_AUTH }}
+          authkey: ${{ secrets.TS_AUTH }}
 
       - name: Deploy to server via ssh
         uses: appleboy/ssh-action@v1.0.3
