@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/categoryModel.dart';
 import 'package:frontend/models/reportModel.dart';
@@ -11,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class FormPage extends StatefulWidget {
   const FormPage({super.key});
@@ -37,12 +40,12 @@ class _FormPageState extends State<FormPage> {
 
   final List<String> _priOp = ["LOW", "MEDIUM", "HIGH"];
 
-  /// ===== IMAGE STATE (แบบเดียวกับ EditProfile) =====
   final ImagePicker _picker = ImagePicker();
   XFile? _selectedImage;
   Uint8List? _selectedImageBytes;
 
-  /// ===== PICK IMAGE =====
+  bool _isAIProcessing = false;
+
   Future<void> _pickImage() async {
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
@@ -75,6 +78,108 @@ class _FormPageState extends State<FormPage> {
         _selectedImage = picked;
         _selectedImageBytes = bytes;
       });
+
+      _analyzeImageAI();
+    }
+  }
+
+  Future<void> _analyzeImageAI() async {
+    if (_selectedImageBytes == null) return;
+
+    setState(() {
+      _isAIProcessing = true;
+    });
+
+    try {
+      final apiKey = dotenv.env['GEMINI_API_KEY'];
+      final base64Image = base64Encode(_selectedImageBytes!);
+
+      final prompt = """
+วิเคราะห์ภาพนี้แล้วจัดหมวดหมู่ปัญหาเพียงหมวดเดียว
+
+หมวดหมู่:
+- ไอที
+- ไฟฟ้า
+- อินเทอร์เน็ต
+- สถานที่
+- เครื่องใช้
+- อื่นๆ
+
+ตอบ JSON เท่านั้น
+
+{
+"STATUS":200,
+"CATEGORY":"string"
+}
+
+ถ้าไม่สามารถระบุได้
+
+{
+"STATUS":400
+}
+""";
+
+      final body = {
+        "contents": [
+          {
+            "parts": [
+              {"text": prompt},
+              {
+                "inlineData": {"mimeType": "image/jpeg", "data": base64Image},
+              },
+            ],
+          },
+        ],
+      };
+
+      final url =
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=$apiKey";
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+
+        String text = result["candidates"][0]["content"]["parts"][0]["text"];
+
+        text = text.replaceAll("```json", "");
+        text = text.replaceAll("```", "");
+
+        final json = jsonDecode(text);
+
+        if (json["STATUS"] == 200) {
+          _autoSelectCategory(json["CATEGORY"]);
+        }
+      }
+    } catch (e) {
+      print("AI Error: $e");
+    }
+
+    setState(() {
+      _isAIProcessing = false;
+    });
+  }
+
+  void _autoSelectCategory(String categoryName) {
+    final categoryProvider = Provider.of<CategoryProvider>(
+      context,
+      listen: false,
+    );
+
+    try {
+      final cat = categoryProvider.categories.firstWhere(
+        (c) => c.name!.toLowerCase().contains(categoryName.toLowerCase()),
+      );
+
+      setState(() {
+        _selectedCat = cat.id.toString();
+      });
+    } catch (e) {
+      print("Category not found");
     }
   }
 
@@ -119,7 +224,7 @@ class _FormPageState extends State<FormPage> {
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: const Color(0xFF4CD080),
-                          borderRadius: BorderRadius.circular(100),
+                          borderRadius: BorderRadius.circular(80),
                         ),
                         child: Row(
                           children: [
@@ -189,7 +294,7 @@ class _FormPageState extends State<FormPage> {
                           : BoxDropdown(
                               name: "หมวดหมู่",
                               value: _selectedCat,
-                              hintText: "เลือกหมวดหมู่",
+                              hintText: "เลือกหมวดหมู่ / AIเลือกให้",
                               categoryItems: categoryProvider.categories,
                               onChanged: (val) =>
                                   setState(() => _selectedCat = val),
@@ -212,38 +317,70 @@ class _FormPageState extends State<FormPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+
                       const SizedBox(height: 8),
 
                       InkWell(
                         onTap: _pickImage,
                         borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          width: double.infinity,
-                          height: 180,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFF5A5A5A)),
-                          ),
-                          child: _selectedImageBytes != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.memory(
-                                    _selectedImageBytes!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(
-                                      Icons.cloud_upload,
-                                      size: 40,
-                                      color: Colors.grey,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text("กดเพื่ออัปโหลด / ถ่ายรูป"),
-                                  ],
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: 180,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFF5A5A5A),
                                 ),
+                              ),
+                              child: _selectedImageBytes != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.memory(
+                                        _selectedImageBytes!,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: const [
+                                        Icon(
+                                          Icons.cloud_upload,
+                                          size: 40,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text("กดเพื่ออัปโหลด / ถ่ายรูป"),
+                                      ],
+                                    ),
+                            ),
+
+                            if (_isAIProcessing)
+                              Container(
+                                height: 180,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        "AI กำลังวิเคราะห์...",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
 
@@ -288,39 +425,10 @@ class _FormPageState extends State<FormPage> {
                                   if (!mounted) return;
 
                                   if (success) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('บันทึกสำเร็จ'),
-                                        backgroundColor: Color(0xFF105D38),
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                      ),
-                                    );
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => const HistoryPage(),
-                                      ),
-                                      // (route) => false,
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          reportProvider.error ??
-                                              'เกิดข้อผิดพลาด',
-                                        ),
-                                        backgroundColor: Color(0xFF105D38),
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
                                       ),
                                     );
                                   }
@@ -341,18 +449,10 @@ class _FormPageState extends State<FormPage> {
                   ),
                 ),
               ),
-              if (reportProvider.isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.4),
-                  child: const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF105D38)),
-                  ),
-                ),
             ],
           );
         },
       ),
-      // body:
     );
   }
 }
@@ -408,9 +508,7 @@ class BoxDropdown extends StatelessWidget {
   final List<String> items;
   final String hintText;
   final ValueChanged<String?> onChanged;
-
-  // เพิ่ม optional สำหรับ category
-  final List<Categorymodel>? categoryItems; // 👈 เพิ่ม
+  final List<Categorymodel>? categoryItems;
 
   const BoxDropdown({
     super.key,
@@ -419,12 +517,11 @@ class BoxDropdown extends StatelessWidget {
     this.items = const [],
     required this.hintText,
     required this.onChanged,
-    this.categoryItems, // 👈 เพิ่ม
+    this.categoryItems,
   });
 
   @override
   Widget build(BuildContext context) {
-    // สร้าง items จาก categoryItems ถ้ามี
     final dropdownItems = categoryItems != null
         ? categoryItems!
               .map(

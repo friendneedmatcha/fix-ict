@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/feedbackModel.dart';
+import 'package:frontend/providers/authProvider.dart';
 import 'package:frontend/providers/feedbackProvider.dart';
 import 'package:frontend/providers/reportProvider.dart';
 import 'package:intl/intl.dart';
@@ -40,6 +41,7 @@ class _HistorydetailpageState extends State<Historydetailpage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ReportProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
     final report = provider.selectedReport;
     bool hasFeedback = report?.feedback != null;
     return Scaffold(
@@ -84,7 +86,9 @@ class _HistorydetailpageState extends State<Historydetailpage> {
                       ),
                     ),
                   ),
-                  if (report?.status == 'SUCCESS' && !hasFeedback) ...[
+                  if (report?.status == 'SUCCESS' &&
+                      !hasFeedback &&
+                      report?.userId == authProvider.userdata?.id) ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         vertical: 16,
