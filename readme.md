@@ -1,4 +1,4 @@
-# GreenWeather
+# FixICT
 
 ![Flutter](https://img.shields.io/badge/Flutter-Frontend-blue?logo=flutter)
 ![Nestjs](https://img.shields.io/badge/nest.js-Backend-red?logo=nestjs)
