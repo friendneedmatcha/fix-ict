@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/providers/authProvider.dart';
+import 'package:frontend/screens/userScreen.dart';
 
 class Registerpage extends StatefulWidget {
   final AuthProvider authProvider;
@@ -137,7 +138,14 @@ class _RegisterpageState extends State<Registerpage> {
                                   ),
                                 ),
                               );
-                              Navigator.pop(context);
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UserMainScreen(),
+                                ),
+                                (Route<dynamic> route) =>
+                                    false, 
+                              );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
