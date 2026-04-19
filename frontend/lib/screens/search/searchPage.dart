@@ -25,9 +25,8 @@ class _SearchPageState extends State<SearchPage> {
 
       if (!mounted) return;
 
-      setState(() {
-        _filteredItems = List<ReportModel>.from(provider.reports);
-      });
+      _filteredItems = List<ReportModel>.from(provider.reports);
+      setState(() {});
     });
   }
 
@@ -40,14 +39,17 @@ class _SearchPageState extends State<SearchPage> {
   void _search(List<ReportModel> allReports) {
     final query = _searchController.text.toLowerCase();
 
-    if (!mounted) return;
+    _filteredItems = allReports.where((item) {
+      final title = item.title?.toLowerCase() ?? '';
+      final firstName = item.userFirstName?.toLowerCase() ?? '';
+      final lastName = item.userLastName?.toLowerCase() ?? '';
 
-    setState(() {
-      _filteredItems = allReports.where((item) {
-        final title = item.title?.toLowerCase() ?? '';
-        return title.contains(query);
-      }).toList();
-    });
+      return title.contains(query) ||
+          firstName.contains(query) ||
+          lastName.contains(query);
+    }).toList();
+
+    if (mounted) setState(() {});
   }
 
   @override
@@ -55,12 +57,13 @@ class _SearchPageState extends State<SearchPage> {
     final provider = context.watch<ReportProvider>();
     final allReports = provider.reports;
 
+    if (_searchController.text.isEmpty &&
+        _filteredItems.length != allReports.length) {
+      _filteredItems = List<ReportModel>.from(allReports);
+    }
+
     return Scaffold(
       appBar: AppBar(
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF105D38)),
-        //   onPressed: () => Navigator.pop(context),
-        // ),
         centerTitle: true,
         title: const Text(
           "ค้นหา",

@@ -50,12 +50,15 @@ Follow these steps to set up the Flutter frontend locally
 2. **Install dependencies**
 
    ```bash
+   cd frontend/
    flutter pub get
    ```
 
 3. **Create a `.env` file**
 
    Inside the root folder of the project (e.g., `frontend/`), create a new `.env` file and add
+
+   Get Gemini API Key ผ่านเว็บไซต์ https://ai.google.dev/gemini-api/docs/api-key
 
    ```env
     API_URL="http://localhost:3000"

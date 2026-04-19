@@ -33,7 +33,7 @@ class _HistoryPageState extends State<HistoryPage> {
       case 'กำลังดำเนินการ':
         return 'IN_PROGRESS';
       case 'ซ่อมสำเร็จ':
-        return 'RESOLVED';
+        return 'SUCCESS';
       default:
         return null; // ทั้งหมด
     }
@@ -46,7 +46,7 @@ class _HistoryPageState extends State<HistoryPage> {
         return 'แจ้งแล้ว';
       case 'IN_PROGRESS':
         return 'กำลังดำเนินการ';
-      case 'RESOLVED':
+      case 'SUCCESS':
         return 'ซ่อมสำเร็จ';
       default:
         return status ?? '-';
@@ -89,14 +89,22 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     final reportProvider = context.watch<ReportProvider>();
-    final reports = reportProvider.reports;
+    final aa = context.watch<AuthProvider>();
+    // final reports = reportProvider.reports;
+    List<ReportModel> reports = [];
+    if (aa.userdata?.role == "ADMIN") {
+      reports = reportProvider.reports;
+    } else {
+      reports = reportProvider.reportById;
+    }
+    // print(reports);
 
     // Count per status
     int countPending = reports.where((r) => r.status == 'PENDING').length;
     int countInProgress = reports
         .where((r) => r.status == 'IN_PROGRESS')
         .length;
-    int countResolved = reports.where((r) => r.status == 'RESOLVED').length;
+    int countResolved = reports.where((r) => r.status == 'SUCCESS').length;
 
     // Filtered list
     final String? filterStatus = _statusFilter(_selectedCategory);

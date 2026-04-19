@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 class ReportProvider extends ChangeNotifier {
   List<ReportModel> _reports = [];
+  List<ReportModel> _reportById = [];
   List<ReportModel> _topFive = [];
   bool _loading = false;
   String? _error;
@@ -15,6 +16,7 @@ class ReportProvider extends ChangeNotifier {
   ReportModel? get selectedReport => _selectedReport;
   List<ReportModel> get topFive => _topFive;
   List<ReportModel> get reports => _reports;
+  List<ReportModel> get reportById => _reportById;
 
   bool get isLoading => _loading;
   String? get error => _error;
@@ -57,7 +59,7 @@ class ReportProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _reports = await _reportService.getByUser(id);
+      _reportById = await _reportService.getByUser(id);
     } catch (e) {
       _error = e.toString();
     } finally {
