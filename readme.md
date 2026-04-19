@@ -103,8 +103,8 @@ Follow these steps to set up the Flutter frontend locally
 
    ```bash
    npx prisma migrate dev
-   npx prisma db seed
    npx prisma generate
+   npx prisma db seed
    ```
 
 5. **Start the backend server**
