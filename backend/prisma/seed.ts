@@ -35,6 +35,7 @@ async function main() {
   ];
 
   for (const user of users) {
+    console.log('seed add user', user.firstName, 'success');
     await prisma.user.upsert({
       where: { email: user.email },
       update: {},
@@ -56,6 +57,73 @@ async function main() {
     ],
     skipDuplicates: true,
   });
+  console.log('seed add category success');
+
+  const report1 = await prisma.report.create({
+    data: {
+      title: 'พัดลมพัง',
+      location: '313',
+      priority: 'MEDIUM',
+      description: 'พัดลมเปิดไม่ติด',
+      userId: 2,
+      categoryId: 2,
+      imageBefore: 'demo1.jpg',
+    },
+  });
+  console.log('seed add report 1 success');
+
+  const report2 = await prisma.report.create({
+    data: {
+      title: 'เก้าอี้พัง',
+      location: '211',
+      priority: 'LOW',
+      description: 'เก้าอี้ขาหัก',
+      userId: 3,
+      categoryId: 5,
+      imageBefore: 'demo2.jpg',
+    },
+  });
+  console.log('seed add report 2 success');
+
+  await prisma.reportUpdate.create({
+    data: {
+      reportId: report1.id,
+      status: 'SUCCESS',
+      imageAfter: 'demo3.jpg',
+      updatedBy: 1,
+    },
+  });
+  console.log('seed update status report 1 success');
+
+  await prisma.reportUpdate.create({
+    data: {
+      reportId: report2.id,
+      status: 'IN_PROGRESS',
+      // imageAfter: 'demo4.jpg',
+      updatedBy: 1,
+    },
+  });
+  console.log('seed update status report 2 success');
+  await prisma.report.update({
+    where: {
+      id: report1.id,
+    },
+    data: {
+      status: 'SUCCESS',
+    },
+  });
+
+  await prisma.feedback.create({
+    data: {
+      reportId: report1.id,
+      userId: 2,
+      rating: 4,
+      comment: 'ดีมากเลยคับ',
+    },
+  });
+  console.log('seed feedback  report 1 success');
+
+  console.log('Seed completed');
 
   // console.log({ , user1, user2 });
 }
