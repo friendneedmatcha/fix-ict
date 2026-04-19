@@ -59,7 +59,7 @@ class _HistoryPageState extends State<HistoryPage> {
         return const Color(0xFFFFA500);
       case 'IN_PROGRESS':
         return const Color(0xFF1976D2);
-      case 'RESOLVED':
+      case 'SUCCESS':
         return const Color(0xFF105D38);
       default:
         return Colors.grey;
