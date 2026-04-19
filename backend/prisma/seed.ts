@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import { PrismaClient } from '../generated/prisma/client';
+import { PrismaClient, Role, Status } from '../generated/prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const adapter = new PrismaMariaDb({
@@ -18,19 +18,19 @@ async function main() {
       firstName: 'Admin',
       lastName: 'FixICT',
       email: 'admin@fixict.com',
-      role: 'ADMIN',
+      role: Role.ADMIN,
     },
     {
       firstName: 'User1',
       lastName: 'FixICT',
       email: 'user1@fixict.com',
-      role: 'USER',
+      role: Role.USER,
     },
     {
       firstName: 'User2',
       lastName: 'FixICT',
       email: 'user2@fixict.com',
-      role: 'USER',
+      role: Role.USER,
     },
   ];
 
@@ -88,7 +88,7 @@ async function main() {
   await prisma.reportUpdate.create({
     data: {
       reportId: report1.id,
-      status: 'SUCCESS',
+      status: Status.SUCCESS,
       imageAfter: 'demo3.jpg',
       updatedBy: 1,
     },
@@ -98,7 +98,7 @@ async function main() {
   await prisma.reportUpdate.create({
     data: {
       reportId: report2.id,
-      status: 'IN_PROGRESS',
+      status: Status.IN_PROGRESS,
       // imageAfter: 'demo4.jpg',
       updatedBy: 1,
     },
@@ -109,7 +109,7 @@ async function main() {
       id: report1.id,
     },
     data: {
-      status: 'SUCCESS',
+      status: Status.SUCCESS,
     },
   });
 
